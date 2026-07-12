@@ -1,0 +1,19 @@
+# Node / Vite
+node_modules
+dist
+pnpm-debug.log
+*.log
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# OS
+.DS_Store
+Thumbs.db
+tsconfig.tsbuildinfo
