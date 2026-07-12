@@ -1,1 +1,29 @@
 // Adapters: IO, DB, HTTP, OS-specific bindings. Ported per feature.
+
+pub mod ads_bridge;
+pub mod ai_config;
+pub mod ai_provider;
+pub mod azure_accounts;
+pub mod azure_cli;
+pub mod azure_oauth;
+pub mod azure_rest;
+pub mod base64;
+pub mod export_config;
+pub mod exporter;
+pub mod import_config;
+pub mod importer;
+pub mod keychain;
+#[cfg(target_os = "macos")]
+pub mod macos_keychain;
+pub mod mssql;
+pub mod notebook_config;
+pub mod notebook_executor;
+pub mod object_scripter;
+pub mod queries_config;
+pub mod queries_db;
+pub mod query_plan_provider;
+pub mod rag_client;
+pub mod schema_provider;
+pub mod table_designer_provider;
+pub mod token_file_cache;
+pub mod vscode_bridge;
