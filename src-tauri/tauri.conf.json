@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "QueryBen",
+  "version": "0.1.0",
+  "identifier": "com.queryben.app",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist",
+    "runner": "../scripts/tauri-cargo-wrapper.sh"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "QueryBen",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 640,
+        "resizable": true,
+        "fullscreen": false,
+        "titleBarStyle": "Visible"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' ipc: http://ipc.localhost; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' ipc: http://ipc.localhost https://login.microsoftonline.com https://login.microsoft.com https://login.windows.net https://*.msftauth.net https://*.msauth.net https://aadcdn.msftauth.net; frame-src 'self' https://login.microsoftonline.com; img-src 'self' data: https://*.msftauth.net; font-src 'self' data:"
+    },
+    "withGlobalTauri": false,
+    "macOSPrivateApi": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "DeveloperTool",
+    "shortDescription": "SQL client for Azure SQL and SQL Server",
+    "longDescription": "SQL client for Azure SQL and SQL Server.",
+    "copyright": "",
+    "publisher": "QueryBen",
+    "macOS": {
+      "minimumSystemVersion": "11.0",
+      "hardenedRuntime": true
+    },
+    "windows": {
+      "wix": {
+        "language": "en-US"
+      }
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  }
+}
