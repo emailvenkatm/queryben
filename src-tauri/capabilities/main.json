@@ -1,0 +1,23 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Least-privilege capabilities for the QueryBen main window. Every permission here is explicit: no *-all sets, no wildcard scopes, no filesystem access in v1. Custom identifier `queryben:execute-query` is enforced at the app layer (see commands/query.rs) and is not a tauri-plugin permission.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:default",
+    "core:webview:default",
+    "dialog:allow-save",
+    {
+      "identifier": "shell:allow-open",
+      "allow": [
+        { "url": "https://queryben.com/**" },
+        { "url": "https://docs.queryben.com/**" },
+        { "url": "https://github.com/queryben/**" },
+        { "url": "https://login.microsoftonline.com/**" },
+        { "url": "https://login.microsoft.com/**" },
+        { "url": "https://login.windows.net/**" }
+      ]
+    }
+  ]
+}

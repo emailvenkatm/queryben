@@ -1,0 +1,23 @@
+# Cargo runner wrapper — signs the dev binary with Developer ID + keychain
+# access-group entitlement BEFORE launching it, so the kernel captures the
+# correct code identity at exec time.
+#
+# Why: macOS keychain ACLs bound to `keychain-access-groups` check the
+# process's launch-time identity (not the on-disk signature). Re-signing
+# after launch is too late — you get errSecAuthFailed (-25293) even though
+# `codesign -d` on the binary shows the right entitlement.
+#
+# The runner (scripts/dev-run.sh) is idempotent and caches signature state
+# via a sidecar file, so it adds ~zero overhead on unchanged binaries.
+#
+# Paths are relative to the cargo workspace root (this directory's parent,
+# src-tauri/), so `../scripts/dev-run.sh` resolves to <repo>/scripts/dev-run.sh.
+#
+# Only wired for macOS targets. Linux/Windows dev builds bypass the wrapper
+# entirely (cargo falls back to its default runner = direct exec).
+
+[target.aarch64-apple-darwin]
+runner = ["../scripts/dev-run.sh"]
+
+[target.x86_64-apple-darwin]
+runner = ["../scripts/dev-run.sh"]

@@ -1,0 +1,155 @@
+[package]
+name = "queryben"
+version = "0.1.0"
+description = "Modern SQL client for MSSQL / Azure SQL / SQL DW"
+authors = ["QueryBen"]
+edition = "2021"
+rust-version = "1.77"
+
+# See https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "queryben_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "queryben"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["macos-private-api"] }
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-updater = "2"
+
+# XLSX writer for the export pipeline. Pure-Rust, no C deps, streams zip
+# straight to disk. `rust_xlsxwriter` v0.79 is the current train (docs +
+# API stable, matches what serde_json / anyhow ecosystems ship).
+rust_xlsxwriter = "0.79"
+
+# Typed IPC: tauri-specta drives specta at the same 2.0 RC train.
+tauri-specta = { version = "2.0.0-rc.25", features = ["derive", "typescript"] }
+specta = { version = "2.0.0-rc.25", features = ["derive", "uuid", "chrono"] }
+specta-typescript = "0.0.12"
+
+# Async runtime + tiberius bridge
+tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7", features = ["compat"] }
+# Stream combinators — needed to iterate tiberius' QueryStream item-by-item so
+# we can capture ResultMetadata (columns) even when the row set is empty.
+futures-util = { version = "0.3", default-features = false }
+
+# MSSQL driver. rustls avoids OpenSSL system dep; sql-browser-tokio for named
+# instances. `tds73` unlocks the SQL 2008+ date-family types (Daten=0x28,
+# Timen=0x29, Datetime2=0x2A, DatetimeOffsetn=0x2B) — without it tiberius rejects
+# `DATE` columns at the TDS layer with "invalid or unsupported column type: 40"
+# before we ever see them. `chrono` provides the NaiveDate/NaiveTime/NaiveDateTime
+# `FromSql` impls we use in commands::query::convert_cell.
+tiberius = { version = "0.12", default-features = false, features = [
+    "chrono",
+    "rustls",
+    "sql-browser-tokio",
+    "tds73",
+] }
+
+# HTTP client for Azure Management REST calls. rustls-tls mirrors tiberius'
+# TLS backend so we ship one crypto stack, not two — no OpenSSL system dep.
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+
+# System-browser OAuth (PKCE) for Azure AD sign-in — see infra::azure_oauth.
+# tiny_http drives the local loopback callback listener; keychain wrappers in
+# infra::macos_keychain (macOS) / keyring (Windows + Linux) store the refresh
+# token in the OS credential store.
+tiny_http = "0.12"
+keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service"] }
+url = "2"
+
+# macOS-only: direct Security.framework binding so we can pin
+# kSecAttrAccessGroup = "H4RK9DC4UP.com.queryben" on every keychain item.
+# That access-group ACL is what makes "Always Allow" prompts stop appearing
+# across rebuilds and app updates — the `keyring` crate uses the default
+# access group, which binds to the exact code-signature hash and re-prompts.
+[target.'cfg(target_os = "macos")'.dependencies]
+security-framework = "3"
+security-framework-sys = "2"
+core-foundation = "0.10"
+core-foundation-sys = "0.8"
+
+# Serialization / errors / IDs / time
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+sha2 = "0.10"
+base64 = "0.22"
+
+# AES-256-CBC decrypt for ADS / VS Code MSAL cache borrowing. Pure-Rust
+# implementation matching the `crypto.createDecipheriv('aes-256-cbc', ...)`
+# usage in ADS's FileEncryptionHelper — we decrypt the ciphertext file with
+# the key + IV that ADS stashed in the OS credential store, then parse the
+# MSAL JSON to extract a refresh token. See infra::ads_bridge for details.
+aes = "0.8"
+cbc = { version = "0.1", features = ["std"] }
+
+# Trait objects for the AI provider abstraction (infra::ai_provider). Lets
+# `RagBackendProvider` and `OpenAiProvider` share one `Box<dyn AiProvider>`.
+async-trait = "0.1"
+
+# SHOWPLAN_XML parsing for the query-plan visualizer.
+quick-xml = "0.36"
+
+# CSV import — the pure-Rust workhorse for the Import Wizard.
+csv = "1"
+
+# Observability
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# OS-specific application-data path resolution for the on-disk Azure token
+# cache (infra::token_file_cache). Same pattern Azure Data Studio uses:
+# refresh token in a plain file under ~/Library/Application Support/QueryBen/
+# survives keychain wipes, code-signing changes, and reinstalls. See module
+# docs for why the keychain alone isn't durable enough.
+dirs = "5"
+
+# Local persistence for Saved Queries + Query History (infra::queries_db).
+# `bundled` statically links libsqlite3 so the app has no dep on the OS sqlite
+# (macOS ships an ancient one; stock Windows has none). Both features share
+# `queries.db` sitting next to `connections.json` in the app-data dir.
+rusqlite = { version = "0.32", features = ["bundled", "chrono"] }
+
+[dev-dependencies]
+# Integration tests for token_file_cache write to per-test temp dirs; we point
+# the cache at them via the QUERYBEN_TOKEN_CACHE_PATH env override.
+tempfile = "3"
+# Tests mutate a process-wide env var (QUERYBEN_TOKEN_CACHE_PATH) so they must
+# not run in parallel — serial_test's #[serial] attribute enforces that.
+serial_test = "3"
+# ads_bridge_test needs to synthesize AES-256-CBC ciphertext to prove the
+# decrypt path works with a known key + IV. Same crate versions as the runtime
+# dependency so the encrypt and decrypt sides share type layouts.
+aes = "0.8"
+cbc = { version = "0.1", features = ["std"] }
+base64 = "0.22"
+
+# Feature flags exposed to tauri.conf.json plugin gates
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+# Release profile — optimize for size to hit the 15-20 MB installer target.
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+incremental = false
+
+# Speed up dev builds a little (tauri-recommended)
+[profile.dev]
+incremental = true
