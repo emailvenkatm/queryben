@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #F4EFE7;
+  --color-cream-dark: #EDE8DF;
+  --color-cream-darker: #E4DDD2;
+  --color-jade: #1A2E2A;
+  --color-jade-mid: #2A5751;
+  --color-amber: #D58A4A;
+  --color-amber-light: #E8A870;
+  --color-ink: #1A1F1D;
+  --color-ink-muted: #6b7370;
+  --color-ink-faint: #9aa39f;
+  --color-fg: #1A1F1D;
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "GeistMono", ui-monospace, "SF Mono", monospace;
+}
+
+:root {
+  --color-bg:            #F4EFE7;
+  --color-bg-elevated:   #FFFFFF;
+  --color-bg-sidebar:    #1A2E2A;
+  --color-primary:       #1A2E2A;
+  --color-primary-hover: #2A5751;
+  --color-accent:        #D58A4A;
+  --color-accent-hover:  #B87232;
+  --color-text:          #1A2E2A;
+  --color-text-muted:    #5A5A5A;
+  --color-text-inverse:  #F4EFE7;
+  --color-border:        #E5DED0;
+  --color-error:         #B04A3A;
+  --color-success:       #2A5751;
+  --color-warning:       #D58A4A;
+  --color-code-bg:       #EFE7D6;
+
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Geist', system-ui, sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    -webkit-user-select: none;
+    user-select: none;
+    overscroll-behavior: none;
+    margin: 0;
+  }
+
+  input,
+  textarea,
+  [contenteditable],
+  .selectable {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(26 46 42 / 0.25);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(26 46 42 / 0.45);
+  }
+}
