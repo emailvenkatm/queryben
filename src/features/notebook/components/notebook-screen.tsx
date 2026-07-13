@@ -3,7 +3,7 @@ import { NotebookCell } from './NotebookCell';
 import { NotebookSidebar } from './NotebookSidebar';
 import { NotebookToolbar } from './NotebookToolbar';
 
-// TODO: import activeConnectionId from connections store once it ships its index.ts
+// TODO: wire from connections store once that feature ships its index.ts
 const STUB_CONN: string | null = null;
 
 export function NotebookScreen() {
