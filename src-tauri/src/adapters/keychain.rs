@@ -2,7 +2,7 @@
 //!
 //! # Contract
 //!
-//! ```
+//! ```text
 //! keychain::set_password(service, account, password) -> Result<(), AppError>
 //! keychain::get_password(service, account)           -> Result<Option<String>, AppError>
 //! keychain::delete_password(service, account)        -> Result<(), AppError>
