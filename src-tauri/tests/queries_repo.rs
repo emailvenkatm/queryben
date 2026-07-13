@@ -12,7 +12,7 @@ use uuid::Uuid;
 use queryben_lib::core::saved_query::{
     HistoryEntry, HistoryFilter, SavedQueryFilter,
 };
-use queryben_lib::adapters::queries_db::{QueriesRepo, SqliteQueriesRepo};
+use queryben_lib::adapters::queries_store::{QueriesRepo, SqliteQueriesRepo};
 
 fn open_repo(dir: &TempDir) -> SqliteQueriesRepo {
     SqliteQueriesRepo::open(dir.path(), 500, "General".into(), 90)

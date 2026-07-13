@@ -28,7 +28,7 @@ use tiny_http::{Header, Response, Server};
 use url::Url;
 
 use crate::error::AppError;
-use crate::adapters::azure_accounts::{self, AccountRegistryEntry};
+use crate::adapters::azure::accounts::{self, AccountRegistryEntry};
 use crate::adapters::token_file_cache::{self, PersistedAccount};
 
 // ---- constants ----------------------------------------------------------------
@@ -543,7 +543,7 @@ pub async fn sign_in<R: Runtime>(
     kc_store(KEYRING_ACCOUNT_INFO, &account_json)?;
 
     // Register the account so the UI can enumerate it.
-    if let Err(err) = azure_accounts::upsert(AccountRegistryEntry {
+    if let Err(err) = super::accounts::upsert(AccountRegistryEntry {
         account_id: account_id.clone(),
         username: account.username.clone(),
         tenant_id: account.tenant_id.clone(),
@@ -653,7 +653,7 @@ pub async fn try_acquire_silent(
     // account" without asking.
     let resolved_account_id: Option<String> = account_id
         .map(str::to_string)
-        .or_else(|| azure_accounts::only_account().map(|e| e.account_id));
+        .or_else(|| super::accounts::only_account().map(|e| e.account_id));
 
     // 1. CLI-first: piggyback on `az account get-access-token` when the user
     //    has already `az login`-ed. Matches Azure Data Studio's behavior —
@@ -668,7 +668,7 @@ pub async fn try_acquire_silent(
         .map(|v| !v.is_empty() && v != "0")
         .unwrap_or(false);
     if !az_cli_disabled {
-    if let Some(cli_token) = crate::adapters::azure_cli::get_access_token_full(scope).await {
+    if let Some(cli_token) = crate::adapters::azure::cli::get_access_token_full(scope).await {
         // Seed the in-memory cache so repeat calls within a session skip the
         // spawn. Fall back to a conservative 55-minute TTL when the CLI
         // didn't emit `expires_on` (Azure CLI < 2.54).
@@ -928,7 +928,7 @@ pub fn current_account(cache: &TokenCache) -> Result<Option<AzureAccount>, AppEr
     if let Some(a) = cache.get_account()? {
         return Ok(Some(a));
     }
-    let registry = azure_accounts::load();
+    let registry = super::accounts::load();
     if !registry.is_empty() {
         // Most recently signed-in wins as the "current" account.
         let mut sorted = registry;
@@ -987,13 +987,13 @@ pub fn current_account(cache: &TokenCache) -> Result<Option<AzureAccount>, AppEr
 /// account registry. Idempotent.
 pub fn sign_out(cache: &TokenCache) -> Result<(), AppError> {
     // Per-account keychain slots first — one delete per registered account.
-    for entry in azure_accounts::load() {
+    for entry in super::accounts::load() {
         let _ = kc_delete(&refresh_key_for(&entry.account_id));
         let _ = kc_delete(&account_info_key_for(&entry.account_id));
     }
     kc_delete(KEYRING_REFRESH_ACCOUNT)?;
     kc_delete(KEYRING_ACCOUNT_INFO)?;
-    let _ = azure_accounts::save(&[]);
+    let _ = super::accounts::save(&[]);
     token_file_cache::clear();
     cache.clear_all()?;
     Ok(())
@@ -1006,7 +1006,7 @@ pub fn sign_out_account(cache: &TokenCache, account_id: &str) -> Result<(), AppE
     let _ = kc_delete(&refresh_key_for(account_id));
     let _ = kc_delete(&account_info_key_for(account_id));
 
-    let remaining = azure_accounts::remove(account_id)?;
+    let remaining = super::accounts::remove(account_id)?;
 
     // If nothing is left, wipe the legacy slots + file cache too — otherwise a
     // stale refresh token could still let silent reauth mint tokens for an
@@ -1029,7 +1029,7 @@ pub fn sign_out_account(cache: &TokenCache, account_id: &str) -> Result<(), AppE
 
 /// List every signed-in account. Read-only.
 pub fn list_accounts() -> Vec<AccountRegistryEntry> {
-    azure_accounts::load()
+    super::accounts::load()
 }
 
 /// Backfill the account registry from whatever the legacy single-account
@@ -1040,7 +1040,7 @@ pub fn list_accounts() -> Vec<AccountRegistryEntry> {
 ///
 /// Never overwrites an existing registry entry. Safe to call on every launch.
 pub fn migrate_legacy_account_if_needed() -> Result<Option<String>, AppError> {
-    if !azure_accounts::load().is_empty() {
+    if !super::accounts::load().is_empty() {
         return Ok(None);
     }
 
@@ -1064,7 +1064,7 @@ pub fn migrate_legacy_account_if_needed() -> Result<Option<String>, AppError> {
     };
 
     let account_id = account.home_account_id.clone();
-    azure_accounts::upsert(AccountRegistryEntry {
+    super::accounts::upsert(AccountRegistryEntry {
         account_id: account_id.clone(),
         username: account.username.clone(),
         tenant_id: account.tenant_id.clone(),

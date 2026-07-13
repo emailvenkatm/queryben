@@ -12,7 +12,7 @@ use tempfile::TempDir;
 use queryben_lib::core::connection::{
     AuthMode, Connection, ConnectionEntry, ConnectionRegistry,
 };
-use queryben_lib::adapters::azure_accounts::{
+use queryben_lib::adapters::azure::accounts::{
     self, AccountRegistryEntry, ENV_ACCOUNTS_PATH_OVERRIDE,
 };
 

@@ -12,7 +12,7 @@ use uuid::Uuid;
 use crate::core::connection::{ConnectionSnapshot, CreateConnectionInput};
 use crate::core::query_plan::QueryPlan;
 use crate::error::AppError;
-use crate::adapters::{azure_oauth, mssql};
+use crate::adapters::{azure::oauth as azure_oauth, mssql};
 use crate::adapters::query_plan_provider::{
     PlanCaptureOptions, QueryPlanProvider, SqlServerQueryPlanProvider,
 };

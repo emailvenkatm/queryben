@@ -19,7 +19,7 @@ use crate::core::schema_diff::{
 };
 use crate::error::AppError;
 use crate::adapters::schema_provider::{compute_diff, SchemaProvider, SqlServerSchemaProvider};
-use crate::adapters::{azure_oauth, mssql};
+use crate::adapters::{azure::oauth as azure_oauth, mssql};
 use crate::state::AppState;
 
 // Matches the tiberius scope used in commands/query.rs. Duplicated here so the

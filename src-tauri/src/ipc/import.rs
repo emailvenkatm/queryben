@@ -32,7 +32,7 @@ use crate::core::query::CellValue;
 use crate::error::AppError;
 use crate::adapters::import_config::ImportConfig;
 use crate::adapters::importer::{registry_from_config, DataImporter, ImporterRegistry};
-use crate::adapters::{azure_oauth, mssql};
+use crate::adapters::{azure::oauth as azure_oauth, mssql};
 use crate::state::AppState;
 
 const SCOPE_SQLDB: &str = "https://database.windows.net/.default";

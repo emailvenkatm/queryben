@@ -20,7 +20,7 @@ use crate::adapters::object_scripter::{
     render_drop_and_create, render_select_top, ObjectScripter, ScripterOptions,
     SqlServerObjectScripter,
 };
-use crate::adapters::{azure_oauth, mssql};
+use crate::adapters::{azure::oauth as azure_oauth, mssql};
 use crate::state::AppState;
 
 // Mirrors commands::query::SCOPE_SQLDB. Duplicated per the convention set by

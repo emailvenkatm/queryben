@@ -20,7 +20,7 @@ use crate::error::AppError;
 use crate::adapters::table_designer_provider::{
     SqlServerTableDesignerProvider, TableDesignerProvider,
 };
-use crate::adapters::{azure_oauth, mssql};
+use crate::adapters::{azure::oauth as azure_oauth, mssql};
 use crate::state::AppState;
 
 // Mirrors commands::query::SCOPE_SQLDB. Duplicated here so the designer path

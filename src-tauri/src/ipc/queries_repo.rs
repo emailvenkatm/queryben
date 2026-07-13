@@ -14,7 +14,7 @@ use uuid::Uuid;
 use crate::core::saved_query::{HistoryEntry, HistoryFilter, SavedQuery, SavedQueryFilter};
 use crate::error::AppError;
 use crate::adapters::queries_config::QueriesConfig;
-use crate::adapters::queries_db::{QueriesRepo, SqliteQueriesRepo};
+use crate::adapters::queries_store::{QueriesRepo, SqliteQueriesRepo};
 
 // One repo per process. Cargo tests that hit the trait directly build their
 // own `SqliteQueriesRepo` via `open` — this cache is only for the runtime IPC

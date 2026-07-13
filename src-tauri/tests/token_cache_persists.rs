@@ -1,7 +1,7 @@
 //! Integration tests: prove the Azure refresh token survives a keychain wipe.
 //!
 //! These tests exercise the ADS-parity file-cache path in
-//! `queryben_lib::adapters::azure_oauth::try_acquire_silent`. They:
+//! `queryben_lib::adapters::azure::oauth::try_acquire_silent`. They:
 //!
 //!   * Point the on-disk cache at a `tempfile::TempDir` via
 //!     `QUERYBEN_TOKEN_CACHE_PATH` so they never clobber the real user file.
@@ -20,7 +20,7 @@ use std::path::PathBuf;
 use serial_test::serial;
 use tempfile::TempDir;
 
-use queryben_lib::adapters::azure_oauth::{self, TokenCache};
+use queryben_lib::adapters::azure::oauth::{self, TokenCache};
 use queryben_lib::adapters::keychain;
 use queryben_lib::adapters::token_file_cache::{
     self, CachedAccessToken, PersistedAccount, TokenCache as FileTokenCache,

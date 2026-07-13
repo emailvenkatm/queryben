@@ -19,7 +19,7 @@ use tauri::State;
 use uuid::Uuid;
 
 use crate::error::AppError;
-use crate::adapters::{azure_oauth, azure_rest};
+use crate::adapters::{azure::oauth as azure_oauth, azure::rest as azure_rest};
 use crate::state::AppState;
 
 const SCOPE_MANAGEMENT: &str = "https://management.azure.com/.default";

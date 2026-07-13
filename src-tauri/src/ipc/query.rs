@@ -24,7 +24,7 @@ use crate::core::schema::{
     TransactionResult,
 };
 use crate::error::AppError;
-use crate::adapters::{azure_oauth, base64, mssql};
+use crate::adapters::{azure::oauth as azure_oauth, base64, mssql};
 use crate::state::AppState;
 
 // tiberius wants the bearer scoped to database.windows.net.

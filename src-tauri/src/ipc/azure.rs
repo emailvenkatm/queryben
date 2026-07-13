@@ -10,8 +10,8 @@ use crate::core::connection::{
     AuthMode, Connection, ConnectionEntry, CreateConnectionInput,
 };
 use crate::error::AppError;
-use crate::adapters::{azure_oauth, azure_rest, mssql};
-use crate::adapters::azure_oauth::AzureAccount;
+use crate::adapters::{azure::oauth as azure_oauth, azure::rest as azure_rest, mssql};
+use crate::adapters::azure::oauth::AzureAccount;
 use crate::state::AppState;
 
 // Firewall-rule branch also emits progress in the same shape as the mssql
@@ -70,7 +70,7 @@ pub async fn azure_current_account(
 #[tauri::command]
 #[specta::specta]
 pub async fn azure_list_accounts()
--> Result<Vec<crate::adapters::azure_accounts::AccountRegistryEntry>, AppError> {
+-> Result<Vec<crate::adapters::azure::accounts::AccountRegistryEntry>, AppError> {
     Ok(azure_oauth::list_accounts())
 }
 
