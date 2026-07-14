@@ -119,7 +119,7 @@ fn refresh_token_survives_keychain_wipe() {
     let rt = tokio::runtime::Runtime::new().expect("runtime");
     let mem_cache = TokenCache::new();
     let token = rt
-        .block_on(azure_oauth::try_acquire_silent(
+        .block_on(oauth::try_acquire_silent(
             &mem_cache,
             "00000000-0000-0000-0000-000000000001",
             "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
@@ -227,7 +227,7 @@ fn migration_from_keychain_copies_to_file_cache() {
     let rt = tokio::runtime::Runtime::new().expect("runtime");
     let mem_cache = TokenCache::new();
     let token = rt
-        .block_on(azure_oauth::try_acquire_silent(
+        .block_on(oauth::try_acquire_silent(
             &mem_cache,
             "00000000-0000-0000-0000-000000000001",
             "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",

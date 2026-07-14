@@ -3,7 +3,7 @@
 use std::path::Path;
 use std::sync::Arc;
 
-use crate::adapters::azure::oauth::{self, TokenCache};
+use crate::adapters::azure::oauth::TokenCache;
 use crate::core::connection::ConnectionRegistry;
 use crate::error::AppError;
 

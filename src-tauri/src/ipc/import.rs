@@ -31,7 +31,7 @@ use crate::core::import::{
 use crate::core::query::CellValue;
 use crate::error::AppError;
 use crate::adapters::import_config::ImportConfig;
-use crate::adapters::importer::{registry_from_config, DataImporter, ImporterRegistry};
+use crate::adapters::importer::{registry_from_config, ImporterRegistry};
 use crate::adapters::{azure::oauth as azure_oauth, mssql};
 use crate::state::AppState;
 

@@ -75,18 +75,6 @@ impl CsvImporter {
         Ok(reader)
     }
 
-    fn headers_from(&self, rdr: &mut csv::Reader<BufReader<std::fs::File>>, first_row: Option<&csv::StringRecord>) -> Vec<String> {
-        if self.has_header {
-            rdr.headers()
-                .map(|h| h.iter().map(String::from).collect())
-                .unwrap_or_default()
-        } else {
-            match first_row {
-                Some(r) => (0..r.len()).map(|i| format!("col{}", i + 1)).collect(),
-                None => Vec::new(),
-            }
-        }
-    }
 }
 
 #[async_trait]
@@ -407,7 +395,6 @@ pub fn infer_column_types(headers: &[String], rows: &[Vec<String>]) -> Vec<Infer
         let mut all_bigint = true;
         let mut all_float = true;
         let mut has_float_marker = false; // `.` or `e`/`E`
-        let mut has_non_i32 = false;
         let mut all_bool = true;
         let mut has_true_false_literal = false;
         let mut all_datetime = true;
@@ -427,7 +414,6 @@ pub fn infer_column_types(headers: &[String], rows: &[Vec<String>]) -> Vec<Infer
             match as_i64 {
                 Some(v) => {
                     if v < i32::MIN as i64 || v > i32::MAX as i64 {
-                        has_non_i32 = true;
                         all_int = false;
                     }
                 }

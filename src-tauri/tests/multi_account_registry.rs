@@ -81,11 +81,11 @@ fn mk_legacy_aad_connection(id: Uuid) -> ConnectionEntry {
 fn three_accounts_roundtrip_through_registry_file() {
     let _g = Guard::new();
 
-    azure_accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
-    azure_accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
-    azure_accounts::upsert(mk_registry_entry("c.t2", "carol@y")).expect("3");
+    accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
+    accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
+    accounts::upsert(mk_registry_entry("c.t2", "carol@y")).expect("3");
 
-    let list = azure_accounts::load();
+    let list = accounts::load();
     assert_eq!(list.len(), 3);
     assert!(list.iter().any(|e| e.username == "alice@x"));
     assert!(list.iter().any(|e| e.username == "bob@x"));
@@ -99,11 +99,11 @@ fn three_accounts_roundtrip_through_registry_file() {
 fn removing_one_account_leaves_others_intact() {
     let _g = Guard::new();
 
-    azure_accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
-    azure_accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
-    azure_accounts::upsert(mk_registry_entry("c.t2", "carol@y")).expect("3");
+    accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
+    accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
+    accounts::upsert(mk_registry_entry("c.t2", "carol@y")).expect("3");
 
-    let after = azure_accounts::remove("b.t1").expect("remove");
+    let after = accounts::remove("b.t1").expect("remove");
     assert_eq!(after.len(), 2);
     assert!(after.iter().any(|e| e.account_id == "a.t1"));
     assert!(after.iter().any(|e| e.account_id == "c.t2"));
@@ -119,7 +119,7 @@ fn legacy_connection_gets_account_id_backfilled_from_only_account() {
 
     // Registry has exactly one signed-in account — the "legacy single-swap"
     // pre-migration shape.
-    azure_accounts::upsert(mk_registry_entry("only.acct", "only@x")).expect("seed");
+    accounts::upsert(mk_registry_entry("only.acct", "only@x")).expect("seed");
 
     // Fresh temp dir for the connection registry so its persisted file
     // doesn't clobber the user's real connections.json.
@@ -132,7 +132,7 @@ fn legacy_connection_gets_account_id_backfilled_from_only_account() {
 
     // Simulate the migration path from state::AppState::new: look up the
     // only account in the registry and backfill.
-    let only = azure_accounts::only_account().expect("exactly one account present");
+    let only = accounts::only_account().expect("exactly one account present");
     let touched = registry
         .backfill_missing_account_id(&only.account_id)
         .expect("backfill");
@@ -153,12 +153,12 @@ fn legacy_connection_gets_account_id_backfilled_from_only_account() {
 fn only_account_returns_none_when_multiple_present() {
     let _g = Guard::new();
 
-    azure_accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
-    azure_accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
+    accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
+    accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
 
     // With two accounts registered, the "single-account" migration heuristic
     // must decline — we don't know which one to backfill against.
-    assert!(azure_accounts::only_account().is_none());
+    assert!(accounts::only_account().is_none());
 }
 
 // ---- test 5: find() returns the right entry --------------------------------
@@ -168,10 +168,10 @@ fn only_account_returns_none_when_multiple_present() {
 fn find_returns_specific_entry_by_account_id() {
     let _g = Guard::new();
 
-    azure_accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
-    azure_accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
+    accounts::upsert(mk_registry_entry("a.t1", "alice@x")).expect("1");
+    accounts::upsert(mk_registry_entry("b.t1", "bob@x")).expect("2");
 
-    let entry = azure_accounts::find("a.t1").expect("found");
+    let entry = accounts::find("a.t1").expect("found");
     assert_eq!(entry.username, "alice@x");
-    assert!(azure_accounts::find("missing.id").is_none());
+    assert!(accounts::find("missing.id").is_none());
 }

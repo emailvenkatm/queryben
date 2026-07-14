@@ -28,7 +28,7 @@ use tiny_http::{Header, Response, Server};
 use url::Url;
 
 use crate::error::AppError;
-use crate::adapters::azure::accounts::{self, AccountRegistryEntry};
+use crate::adapters::azure::accounts::AccountRegistryEntry;
 use crate::adapters::token_file_cache::{self, PersistedAccount};
 
 // ---- constants ----------------------------------------------------------------
