@@ -23,21 +23,25 @@ const AZURE_TENANT_ID = import.meta.env.VITE_AZURE_AD_TENANT_ID ?? '';
 
 export interface AzureAccount {
   id: string;
-  username: string | null;
+  username: string;
   name: string | null;
-  tenantId: string | null;
+  tenantId: string;
+  homeAccountId: string;
 }
 
 export interface AccountRegistryEntry {
-  id: string;
-  email: string | null;
+  accountId: string;
+  username: string;
   displayName: string | null;
-  tenantId: string | null;
+  tenantId: string;
+  lastSignedIn: string;
 }
 
 export interface AzureSubscription {
   id: string;
+  subscriptionId: string;
   displayName: string;
+  tenantId: string;
   state: string;
 }
 
@@ -47,20 +51,30 @@ export interface AzureSqlServer {
   location: string;
   resourceGroup: string;
   fullyQualifiedDomainName: string;
+  administratorLogin: string | null;
+  version: string | null;
+  kind: string | null;
 }
 
 export interface AzureSqlDatabase {
   id: string;
   name: string;
-  serverId: string;
+  serverName: string;
   location: string;
+  skuTier: string | null;
+  skuName: string | null;
+  status: string | null;
+  collation: string | null;
+  creationDate: string | null;
 }
 
 export interface ConnectAzureSqlInput {
-  subscriptionId: string;
+  displayName: string;
+  serverFqdn: string;
+  database: string;
   serverId: string;
-  databaseId: string;
-  name: string;
+  nickname?: string | null;
+  color?: string | null;
 }
 
 // ---- ADS onboarding types --------------------------------------------------
