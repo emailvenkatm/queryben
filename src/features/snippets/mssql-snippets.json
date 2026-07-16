@@ -1,0 +1,227 @@
+[
+  {
+    "id": "mssql.ddl.create-table",
+    "name": "Create table",
+    "description": "CREATE TABLE with identity primary key and created_at column.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["ddl", "create", "table"],
+    "body": "CREATE TABLE ${1:dbo}.${2:table_name} (\n  ${3:id} INT IDENTITY(1,1) PRIMARY KEY,\n  ${4:name} NVARCHAR(${5:255}) NOT NULL,\n  created_at DATETIME2 NOT NULL CONSTRAINT DF_${2}_created_at DEFAULT SYSUTCDATETIME()\n);"
+  },
+  {
+    "id": "mssql.ddl.alter-table-add-column",
+    "name": "Alter table add column",
+    "description": "ALTER TABLE ADD COLUMN with type and nullability.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["ddl", "alter", "column"],
+    "body": "ALTER TABLE ${1:dbo}.${2:table_name}\n  ADD ${3:column_name} ${4:NVARCHAR(255)} ${5:NULL};"
+  },
+  {
+    "id": "mssql.ddl.drop-table-if-exists",
+    "name": "Drop table if exists",
+    "description": "Guarded DROP TABLE (2016+).",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["ddl", "drop", "table"],
+    "body": "DROP TABLE IF EXISTS ${1:dbo}.${2:table_name};"
+  },
+  {
+    "id": "mssql.ddl.create-index",
+    "name": "Create nonclustered index",
+    "description": "CREATE NONCLUSTERED INDEX with INCLUDE columns.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["ddl", "index"],
+    "body": "CREATE NONCLUSTERED INDEX ${1:IX_${2:table_name}_${3:column_name}}\n  ON ${4:dbo}.${2} (${3})\n  INCLUDE (${5:other_column});"
+  },
+  {
+    "id": "mssql.ddl.create-view",
+    "name": "Create view",
+    "description": "CREATE OR ALTER VIEW.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["ddl", "view"],
+    "body": "CREATE OR ALTER VIEW ${1:dbo}.${2:view_name}\nAS\nSELECT\n  ${3:column_list}\nFROM ${4:dbo}.${5:source_table}\nWHERE ${6:condition};"
+  },
+  {
+    "id": "mssql.dml.select-top-where",
+    "name": "SELECT TOP with WHERE",
+    "description": "SELECT TOP N with WHERE and ORDER BY.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["dml", "select"],
+    "body": "SELECT TOP ${1:100} ${2:*}\nFROM ${3:dbo}.${4:table_name}\nWHERE ${5:condition}\nORDER BY ${6:column} ${7:DESC};"
+  },
+  {
+    "id": "mssql.dml.insert-select",
+    "name": "INSERT ... SELECT",
+    "description": "INSERT into target from a SELECT query.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["dml", "insert"],
+    "body": "INSERT INTO ${1:dbo}.${2:target_table} (${3:col_a}, ${4:col_b})\nSELECT ${3}, ${4}\nFROM ${5:dbo}.${6:source_table}\nWHERE ${7:condition};"
+  },
+  {
+    "id": "mssql.dml.update-join",
+    "name": "UPDATE with JOIN",
+    "description": "UPDATE ... FROM ... JOIN (T-SQL join-in-update).",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["dml", "update", "join"],
+    "body": "UPDATE t\n  SET t.${1:target_col} = s.${2:source_col}\nFROM ${3:dbo}.${4:target_table} AS t\nINNER JOIN ${5:dbo}.${6:source_table} AS s\n  ON s.${7:key} = t.${7}\nWHERE ${8:condition};"
+  },
+  {
+    "id": "mssql.dml.delete-where",
+    "name": "DELETE with WHERE",
+    "description": "DELETE with a WHERE clause. Wrap in a transaction if you want a rollback safety net.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["dml", "delete"],
+    "body": "DELETE FROM ${1:dbo}.${2:table_name}\nWHERE ${3:condition};"
+  },
+  {
+    "id": "mssql.dml.upsert-merge",
+    "name": "Upsert via MERGE",
+    "description": "MERGE-based upsert (INSERT on no-match, UPDATE on match).",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["dml", "merge", "upsert"],
+    "body": "MERGE ${1:dbo}.${2:target_table} AS t\nUSING (\n  SELECT ${3:key_value} AS ${4:key_col}, ${5:new_value} AS ${6:val_col}\n) AS s\nON t.${4} = s.${4}\nWHEN MATCHED THEN\n  UPDATE SET t.${6} = s.${6}\nWHEN NOT MATCHED THEN\n  INSERT (${4}, ${6})\n  VALUES (s.${4}, s.${6});"
+  },
+  {
+    "id": "mssql.pattern.row-number-partition",
+    "name": "ROW_NUMBER OVER PARTITION BY",
+    "description": "Rank rows within a group; keep the top N per partition.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["pattern", "window", "ranking"],
+    "body": "WITH ranked AS (\n  SELECT\n    ${1:*},\n    ROW_NUMBER() OVER (\n      PARTITION BY ${2:partition_col}\n      ORDER BY ${3:order_col} ${4:DESC}\n    ) AS rn\n  FROM ${5:dbo}.${6:table_name}\n)\nSELECT *\nFROM ranked\nWHERE rn <= ${7:1};"
+  },
+  {
+    "id": "mssql.pattern.pivot",
+    "name": "PIVOT",
+    "description": "Pivot rows to columns using aggregation.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["pattern", "pivot"],
+    "body": "SELECT ${1:key_col}, ${2:[A], [B], [C]}\nFROM (\n  SELECT ${1}, ${3:pivot_col}, ${4:value_col}\n  FROM ${5:dbo}.${6:table_name}\n) AS src\nPIVOT (\n  ${7:SUM}(${4}) FOR ${3} IN (${2})\n) AS p;"
+  },
+  {
+    "id": "mssql.pattern.unpivot",
+    "name": "UNPIVOT",
+    "description": "Fold columns into rows.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["pattern", "unpivot"],
+    "body": "SELECT ${1:key_col}, ${2:attr}, ${3:value}\nFROM (\n  SELECT ${1}, ${4:col_a}, ${5:col_b}, ${6:col_c}\n  FROM ${7:dbo}.${8:table_name}\n) AS src\nUNPIVOT (\n  ${3} FOR ${2} IN (${4}, ${5}, ${6})\n) AS u;"
+  },
+  {
+    "id": "mssql.pattern.cte",
+    "name": "Common Table Expression",
+    "description": "Named CTE followed by a SELECT.",
+    "language": "sql",
+    "scope": "ANSI",
+    "tags": ["pattern", "cte"],
+    "body": "WITH ${1:cte_name} AS (\n  SELECT ${2:column_list}\n  FROM ${3:dbo}.${4:source_table}\n  WHERE ${5:condition}\n)\nSELECT *\nFROM ${1};"
+  },
+  {
+    "id": "mssql.introspect.list-tables-in-schema",
+    "name": "List tables in schema",
+    "description": "All base tables in a given schema.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["introspect", "schema"],
+    "body": "SELECT TABLE_SCHEMA, TABLE_NAME\nFROM INFORMATION_SCHEMA.TABLES\nWHERE TABLE_TYPE = 'BASE TABLE'\n  AND TABLE_SCHEMA = '${1:dbo}'\nORDER BY TABLE_NAME;"
+  },
+  {
+    "id": "mssql.introspect.list-indexes-on-table",
+    "name": "List indexes on table",
+    "description": "Every index (with columns) on the target table.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["introspect", "index"],
+    "body": "SELECT\n  i.name AS index_name,\n  i.type_desc,\n  i.is_unique,\n  STRING_AGG(c.name, ', ') WITHIN GROUP (ORDER BY ic.key_ordinal) AS key_columns\nFROM sys.indexes AS i\nJOIN sys.index_columns AS ic\n  ON ic.object_id = i.object_id AND ic.index_id = i.index_id\nJOIN sys.columns AS c\n  ON c.object_id = ic.object_id AND c.column_id = ic.column_id\nWHERE i.object_id = OBJECT_ID('${1:dbo}.${2:table_name}')\n  AND i.type > 0\nGROUP BY i.name, i.type_desc, i.is_unique\nORDER BY i.name;"
+  },
+  {
+    "id": "mssql.introspect.table-row-counts",
+    "name": "Table row counts",
+    "description": "Fast per-table row estimates from sys.dm_db_partition_stats.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["introspect", "stats"],
+    "body": "SELECT\n  s.name AS schema_name,\n  t.name AS table_name,\n  SUM(p.row_count) AS approx_rows\nFROM sys.dm_db_partition_stats AS p\nJOIN sys.tables AS t ON t.object_id = p.object_id\nJOIN sys.schemas AS s ON s.schema_id = t.schema_id\nWHERE p.index_id IN (0, 1)\nGROUP BY s.name, t.name\nORDER BY approx_rows DESC;"
+  },
+  {
+    "id": "mssql.introspect.blocking-queries",
+    "name": "Blocking queries",
+    "description": "Sessions currently blocked, and who is blocking them.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["introspect", "diagnostics", "blocking"],
+    "body": "SELECT\n  r.session_id AS blocked_session,\n  r.blocking_session_id AS blocked_by,\n  r.wait_type,\n  r.wait_time,\n  r.status,\n  DB_NAME(r.database_id) AS database_name,\n  SUBSTRING(t.text, r.statement_start_offset / 2 + 1,\n    ((CASE r.statement_end_offset WHEN -1 THEN DATALENGTH(t.text) ELSE r.statement_end_offset END - r.statement_start_offset) / 2) + 1) AS statement_text\nFROM sys.dm_exec_requests AS r\nCROSS APPLY sys.dm_exec_sql_text(r.sql_handle) AS t\nWHERE r.blocking_session_id <> 0;"
+  },
+  {
+    "id": "mssql.introspect.top-slow-queries",
+    "name": "Top slow queries",
+    "description": "Cached plans ranked by average elapsed time.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["introspect", "diagnostics", "performance"],
+    "body": "SELECT TOP ${1:20}\n  qs.execution_count,\n  qs.total_elapsed_time / 1000 AS total_ms,\n  qs.total_elapsed_time / qs.execution_count / 1000 AS avg_ms,\n  qs.total_logical_reads / qs.execution_count AS avg_reads,\n  SUBSTRING(st.text, qs.statement_start_offset / 2 + 1,\n    ((CASE qs.statement_end_offset WHEN -1 THEN DATALENGTH(st.text) ELSE qs.statement_end_offset END - qs.statement_start_offset) / 2) + 1) AS statement_text\nFROM sys.dm_exec_query_stats AS qs\nCROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) AS st\nORDER BY avg_ms DESC;"
+  },
+  {
+    "id": "mssql.admin.kill-session",
+    "name": "Kill session",
+    "description": "Terminate a session by SPID.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["admin", "session"],
+    "body": "KILL ${1:session_id};"
+  },
+  {
+    "id": "mssql.admin.show-version",
+    "name": "Show version",
+    "description": "SQL Server version + edition banner.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["admin", "version"],
+    "body": "SELECT\n  @@VERSION AS version_banner,\n  SERVERPROPERTY('ProductVersion') AS product_version,\n  SERVERPROPERTY('Edition') AS edition,\n  SERVERPROPERTY('EngineEdition') AS engine_edition;"
+  },
+  {
+    "id": "mssql.admin.backup-database",
+    "name": "Backup database",
+    "description": "Full BACKUP DATABASE with compression + checksum.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["admin", "backup"],
+    "body": "BACKUP DATABASE [${1:database_name}]\n  TO DISK = N'${2:C:\\Backups\\${1}_full.bak}'\n  WITH FORMAT, INIT, COMPRESSION, CHECKSUM,\n       NAME = N'${1}-Full Database Backup';"
+  },
+  {
+    "id": "mssql.admin.restore-database",
+    "name": "Restore database",
+    "description": "RESTORE DATABASE from a full backup file.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["admin", "restore"],
+    "body": "RESTORE DATABASE [${1:database_name}]\n  FROM DISK = N'${2:C:\\Backups\\${1}_full.bak}'\n  WITH REPLACE, RECOVERY, STATS = 10;"
+  },
+  {
+    "id": "mssql.admin.show-locks",
+    "name": "Show current locks",
+    "description": "Live lock inventory via sys.dm_tran_locks.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["admin", "locks"],
+    "body": "SELECT\n  l.request_session_id AS session_id,\n  l.resource_type,\n  l.resource_database_id,\n  DB_NAME(l.resource_database_id) AS database_name,\n  l.request_mode,\n  l.request_status,\n  OBJECT_NAME(p.object_id, l.resource_database_id) AS object_name\nFROM sys.dm_tran_locks AS l\nLEFT JOIN sys.partitions AS p\n  ON p.hobt_id = l.resource_associated_entity_id\nORDER BY l.request_session_id, l.resource_type;"
+  },
+  {
+    "id": "mssql.admin.show-connections",
+    "name": "Show active connections",
+    "description": "Non-system sessions with login + host + program.",
+    "language": "sql",
+    "scope": "T-SQL",
+    "tags": ["admin", "sessions"],
+    "body": "SELECT\n  session_id,\n  login_name,\n  host_name,\n  program_name,\n  status,\n  cpu_time,\n  memory_usage,\n  login_time,\n  last_request_end_time\nFROM sys.dm_exec_sessions\nWHERE is_user_process = 1\nORDER BY login_time DESC;"
+  }
+]
