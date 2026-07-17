@@ -72,5 +72,5 @@ pub async fn execute_transaction(
     connection_id: Uuid,
     statements: Vec<String>,
 ) -> Result<TransactionResult, AppError> {
-    app::execute_transaction::run(&state, connection_id, statements).await
+    app::execute_transaction::run(&state, connection_id.into(), statements).await
 }

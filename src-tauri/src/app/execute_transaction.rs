@@ -3,9 +3,8 @@
 
 use std::time::Instant;
 
-use uuid::Uuid;
-
 use crate::adapters::mssql;
+use crate::core::ids::ConnectionId;
 use crate::core::schema::TransactionResult;
 use crate::error::AppError;
 use crate::state::AppState;
@@ -19,13 +18,14 @@ const MAX_TRANSACTION_STATEMENTS: usize = 500;
 
 pub async fn run(
     state: &AppState,
-    connection_id: Uuid,
+    connection_id: ConnectionId,
     statements: Vec<String>,
 ) -> Result<TransactionResult, AppError> {
+    let uuid = connection_id.as_uuid();
     let statement_count = statements.len();
     tracing::info!(
         target: "queryben::execute-transaction",
-        %connection_id,
+        connection_id = %uuid,
         statement_count,
         "entry"
     );
@@ -49,9 +49,9 @@ pub async fn run(
         )));
     }
 
-    let snapshot = state.registry.snapshot(connection_id)?;
+    let snapshot = state.registry.snapshot(uuid)?;
     let input = reopen_input(state, snapshot).await?;
-    let mut client = mssql::connect_for_connection(&input, connection_id).await?;
+    let mut client = mssql::connect_for_connection(&input, uuid).await?;
 
     let started = Instant::now();
 
@@ -140,7 +140,7 @@ pub async fn run(
         }
     };
 
-    state.registry.mark_used(connection_id).ok();
+    state.registry.mark_used(uuid).ok();
 
     let duration_ms = started.elapsed().as_millis() as u32;
     tracing::info!(
