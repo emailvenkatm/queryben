@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const STORAGE_KEY = 'queryben.onboarding.v1';
 
@@ -33,10 +33,7 @@ function write(next: State): void {
 export function useOnboarding() {
   const [state, setState] = useState<State | null>(read);
 
-  const isFirstRun = useMemo(() => {
-    if (!state) return true;
-    return state.completedAt === null && state.skippedAt === null;
-  }, [state]);
+  const isFirstRun = !state || (state.completedAt === null && state.skippedAt === null);
 
   const markComplete = useCallback((opts?: { importedFromAds?: boolean }) => {
     const next: State = {

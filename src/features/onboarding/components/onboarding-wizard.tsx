@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { commands } from '@/shared/api/tauri-bindings';
@@ -103,15 +103,8 @@ export function OnboardingWizard() {
     }
   }, []);
 
-  const connectionCount = useMemo(() => {
-    if (importSummary) return importSummary.connectionsImported;
-    return detection?.connectionCount ?? 0;
-  }, [detection, importSummary]);
-
-  const signedInEmail = useMemo(() => {
-    if (importSummary && importSummary.accountsImported > 0) return detection?.msalAccountEmail ?? null;
-    return detection?.msalAccountEmail ?? null;
-  }, [detection, importSummary]);
+  const connectionCount = importSummary?.connectionsImported ?? detection?.connectionCount ?? 0;
+  const signedInEmail = detection?.msalAccountEmail ?? null;
 
   if (!isFirstRun) return null;
 
