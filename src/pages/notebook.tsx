@@ -1,4 +1,5 @@
-// Stub — notebook feature agent fills this in.
+import { NotebookScreen } from '@/features/notebook';
+
 export function NotebookPage(): React.ReactElement {
-  return <div>notebook</div>;
+  return <NotebookScreen />;
 }

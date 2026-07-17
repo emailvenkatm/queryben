@@ -1,4 +1,5 @@
-// Stub — settings feature agent fills this in.
+import { SettingsScreen } from '@/features/settings';
+
 export function SettingsPage(): React.ReactElement {
-  return <div>settings</div>;
+  return <SettingsScreen />;
 }

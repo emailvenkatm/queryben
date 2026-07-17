@@ -1,4 +1,5 @@
-// Stub — onboarding feature agent fills this in.
+import { OnboardingWizard } from '@/features/onboarding';
+
 export function OnboardingPage(): React.ReactElement {
-  return <div>onboarding</div>;
+  return <OnboardingWizard />;
 }

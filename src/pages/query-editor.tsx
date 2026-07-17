@@ -1,4 +1,5 @@
-// Stub — query-editor feature agent fills this in.
+import { EditorScreen } from '@/features/query-editor';
+
 export function QueryEditorPage(): React.ReactElement {
-  return <div>query-editor</div>;
+  return <EditorScreen />;
 }

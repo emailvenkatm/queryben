@@ -1,4 +1,12 @@
-// Stub — connections feature agent fills this in.
+import { useState } from 'react';
+import { ListScreen, AddSheet } from '@/features/connections';
+
 export function ConnectionsPage(): React.ReactElement {
-  return <div>connections</div>;
+  const [adding, setAdding] = useState(false);
+  return (
+    <>
+      <ListScreen onAddConnection={() => setAdding(true)} />
+      <AddSheet open={adding} onOpenChange={setAdding} />
+    </>
+  );
 }

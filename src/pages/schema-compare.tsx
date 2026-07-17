@@ -1,4 +1,5 @@
-// Stub — schema-compare feature agent fills this in.
+import { SchemaCompareScreen } from '@/features/schema-compare';
+
 export function SchemaComparePage(): React.ReactElement {
-  return <div>schema-compare</div>;
+  return <SchemaCompareScreen />;
 }
