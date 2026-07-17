@@ -10,9 +10,9 @@ use std::time::{Duration, Instant};
 
 use futures_util::TryStreamExt;
 use tiberius::{Query, QueryItem, Row};
-use uuid::Uuid;
 
 use crate::adapters::mssql;
+use crate::core::ids::ConnectionId;
 use crate::core::query::{ColumnMeta, QueryOutcome, ResultSet, ROW_CAP};
 use crate::error::AppError;
 use crate::state::AppState;
@@ -24,19 +24,20 @@ const QUERY_TIMEOUT_SECS: u64 = 60;
 
 pub async fn run(
     state: &AppState,
-    connection_id: Uuid,
+    connection_id: ConnectionId,
     sql: String,
 ) -> Result<QueryOutcome, AppError> {
-    tracing::info!(target: "queryben::execute-query", %connection_id, sql_len = sql.len());
+    let uuid = connection_id.as_uuid();
+    tracing::info!(target: "queryben::execute-query", connection_id = %uuid, sql_len = sql.len());
 
-    let snapshot = state.registry.snapshot(connection_id)?;
+    let snapshot = state.registry.snapshot(uuid)?;
     let input = reopen_input(state, snapshot).await?;
 
     // Timeout the initial connect too — a post-network-switch TLS handshake
     // can wedge just as hard as an active stream.
     let mut client = match tokio::time::timeout(
         Duration::from_secs(QUERY_TIMEOUT_SECS),
-        mssql::connect_for_connection(&input, connection_id),
+        mssql::connect_for_connection(&input, uuid),
     )
     .await
     {
@@ -180,7 +181,7 @@ pub async fn run(
     // Final flush for the tail set (Ok(None) branch).
     flush(&mut result_sets, &mut cur_columns, &mut cur_rows, cur_started);
 
-    state.registry.mark_used(connection_id).ok();
+    state.registry.mark_used(uuid).ok();
 
     let total_duration_ms = batch_started.elapsed().as_millis() as u32;
     tracing::info!(

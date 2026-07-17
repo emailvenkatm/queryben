@@ -18,7 +18,7 @@ pub async fn execute_query(
     connection_id: Uuid,
     sql: String,
 ) -> Result<QueryOutcome, AppError> {
-    app::execute_query::run(&state, connection_id, sql).await
+    app::execute_query::run(&state, connection_id.into(), sql).await
 }
 
 // TODO: real cancel needs per-query handles + a tiberius attention-token
