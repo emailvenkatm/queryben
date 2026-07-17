@@ -1,0 +1,127 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Don't overlap two tag pushes on the same ref. Rare, but if it happens
+# the second run would fight the first for the release upload slot.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: release-macos-arm64
+            os: macos-14
+            rust-target: aarch64-apple-darwin
+            tauri-args: --target aarch64-apple-darwin
+          - name: release-macos-x86_64
+            os: macos-13
+            rust-target: x86_64-apple-darwin
+            tauri-args: --target x86_64-apple-darwin
+          - name: release-windows
+            os: windows-latest
+            rust-target: x86_64-pc-windows-msvc
+            tauri-args: --target x86_64-pc-windows-msvc
+          - name: release-linux
+            os: ubuntu-22.04
+            rust-target: x86_64-unknown-linux-gnu
+            tauri-args: --target x86_64-unknown-linux-gnu
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install linux deps
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: install rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      - name: cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: install deps
+        run: pnpm install --frozen-lockfile
+
+      # Windows signing is optional — the p12 is only present in the repo
+      # once we buy an EV cert. Fall through with a warning until then so
+      # tag pushes still ship an unsigned installer that beta users can
+      # bypass with SmartScreen.
+      - name: check windows signing secrets
+        if: matrix.os == 'windows-latest'
+        id: win-sign
+        shell: bash
+        run: |
+          if [ -n "${{ secrets.WINDOWS_CERT_P12_BASE64 }}" ] && [ -n "${{ secrets.WINDOWS_CERT_PASSWORD }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::WINDOWS_CERT_P12_BASE64 / WINDOWS_CERT_PASSWORD not set — building unsigned"
+          fi
+
+      # tauri-action handles macOS signing + notarization when the APPLE_*
+      # env vars are present: imports the p12 into an ephemeral keychain,
+      # signs the .app bundle, submits to notarytool, staples the ticket.
+      # Ephemeral keychain is cleaned up in the action's post step.
+      - name: build and release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS: signing + notarization
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Windows: only forwarded when the guard step said enabled.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.WINDOWS_CERT_P12_BASE64 }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        with:
+          # Tag name comes from the actual git tag, no synthesized names.
+          # `${GITHUB_REF_NAME}` is the tag itself (e.g. `v0.1.0`).
+          tagName: ${{ github.ref_name }}
+          releaseName: 'QueryBen ${{ github.ref_name }}'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.tauri-args }}
