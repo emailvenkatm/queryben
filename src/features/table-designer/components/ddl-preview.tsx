@@ -16,7 +16,7 @@ export function combineSql(statements: DdlStatement[]): string {
   return `BEGIN TRANSACTION;\n\n${statements.map((s) => s.sql).join('\n\n')}\n\nCOMMIT;`;
 }
 
-export function DdlPreview({ statements, isGenerating }: Props): React.ReactElement {
+export function DdlPreview({ statements, isGenerating }: Props) {
   const sql = combineSql(statements);
 
   return (

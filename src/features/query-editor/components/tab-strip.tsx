@@ -8,7 +8,7 @@ interface TabStripProps {
   onNewTab?: () => void;
 }
 
-export function TabStrip({ tabs, activeTabId, onTabChange, onTabClose, onNewTab }: TabStripProps): React.ReactElement | null {
+export function TabStrip({ tabs, activeTabId, onTabChange, onTabClose, onNewTab }: TabStripProps) {
   if (tabs.length === 0) return null;
 
   return (

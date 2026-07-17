@@ -12,7 +12,7 @@ interface SaveQueryDialogProps {
 const labelStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 5, fontSize: 11, color: 'var(--color-text-muted)', fontFamily: 'Geist, sans-serif', marginBottom: 12, fontWeight: 500 };
 const inputStyle: React.CSSProperties = { padding: '7px 10px', border: '1px solid rgba(26,46,42,0.15)', borderRadius: 5, fontSize: 13, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'Geist, sans-serif', outline: 'none' };
 
-export function SaveQueryDialog({ open, sql, connectionId, onClose, onSaved }: SaveQueryDialogProps): React.ReactElement | null {
+export function SaveQueryDialog({ open, sql, connectionId, onClose, onSaved }: SaveQueryDialogProps) {
   const [name, setName] = useState('');
   const [folder, setFolder] = useState('');
   const [error, setError] = useState<string | null>(null);

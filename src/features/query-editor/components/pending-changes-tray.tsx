@@ -17,7 +17,7 @@ interface TransactionResult {
   errorMessage?: string;
 }
 
-export function PendingChangesTray({ tabId, connectionId, onCommitted }: PendingChangesTrayProps): React.ReactElement | null {
+export function PendingChangesTray({ tabId, connectionId, onCommitted }: PendingChangesTrayProps) {
   const allChanges = usePendingChangesStore((s) => s.changes);
   const changes = useMemo(() => allChanges.filter((c) => c.tabId === tabId), [allChanges, tabId]);
   const unstage = usePendingChangesStore((s) => s.unstage);

@@ -13,7 +13,7 @@ interface AppShellProps {
   accountAvatar?: React.ReactNode;
 }
 
-export function AppShell({ commandPalette, objectTree, accountAvatar }: AppShellProps): React.ReactElement {
+export function AppShell({ commandPalette, objectTree, accountAvatar }: AppShellProps) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const activeConnectionId = useActiveConnectionStore((s) => s.activeConnectionId);
   const location = useLocation();

@@ -7,7 +7,7 @@ import { DdlPreview } from './ddl-preview';
 const LABEL: React.CSSProperties = { fontSize: 10, fontFamily: 'Geist Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-muted)' };
 const FIELD: React.CSSProperties = { padding: '5px 8px', border: '1px solid rgba(26,46,42,0.14)', borderRadius: 4, fontFamily: 'Geist Mono, monospace', fontSize: 12, color: 'var(--color-text)' };
 
-export function TableDesignerScreen(): React.ReactElement {
+export function TableDesignerScreen() {
   const { isNew, next, ddl, isLoading, loadError, applyError, applyOk, isApplying, isGenerating, setNext, togglePk, apply } = useTableDesigner();
 
   if (!next && isLoading && !isNew) {

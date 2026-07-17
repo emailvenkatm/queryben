@@ -1,7 +1,7 @@
 // Fake macOS traffic lights. Real ones are provided by the OS when
 // decorations = true, but we render our own so the title bar can host
 // content on both platforms.
-export function TitleBar(): React.ReactElement {
+export function TitleBar() {
   return (
     <div
       style={{

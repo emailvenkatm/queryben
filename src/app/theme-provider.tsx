@@ -5,7 +5,7 @@ import { coercePalette, getFallbackPreset, mergePalette } from '@/shared/theme/p
 import { applyPalette } from '@/shared/theme/apply-palette';
 
 // Reads theme.json from disk on mount and applies it if valid.
-export function ThemeProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { getActivePalette, setCustomPalette } = useThemeStore();
 
   useEffect(() => {

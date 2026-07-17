@@ -35,7 +35,7 @@ export function CellEditor({
   isNullable = false,
   onCommit,
   onCancel,
-}: CellEditorProps): React.ReactElement {
+}: CellEditorProps) {
   const inputType = resolveInputType(sqlType);
   const [isNull, setIsNull] = useState(initial === null);
   const [text, setText] = useState(() => {
@@ -102,7 +102,7 @@ interface InsertCellInputProps {
   onCommit: (value: EditingValue) => void;
 }
 
-export function InsertCellInput({ value, sqlType, isNullable, columnName, onCommit }: InsertCellInputProps): React.ReactElement {
+export function InsertCellInput({ value, sqlType, isNullable, columnName, onCommit }: InsertCellInputProps) {
   const inputType = resolveInputType(sqlType);
   const [text, setText] = useState(() => {
     if (value === null || value === undefined) return '';

@@ -33,7 +33,7 @@ function NavLink({
   label: string;
   Icon: () => React.ReactElement;
   active: boolean;
-}): React.ReactElement {
+}) {
   return (
     <Link
       to={path}
@@ -58,7 +58,7 @@ function NavLink({
   );
 }
 
-export function Sidebar({ onOpenCommandPalette, accountAvatar }: SidebarProps): React.ReactElement {
+export function Sidebar({ onOpenCommandPalette, accountAvatar }: SidebarProps) {
   const location = useLocation();
 
   const isActive = (path: string): boolean => {

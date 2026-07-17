@@ -8,7 +8,7 @@ interface SnippetPaletteProps {
   onInsert: (body: string) => void;
 }
 
-function Kbd({ children }: { children: React.ReactNode }): React.ReactElement {
+function Kbd({ children }: { children: React.ReactNode }) {
   return (
     <span style={{ background: 'rgba(26,46,42,0.07)', border: '1px solid rgba(26,46,42,0.10)', borderRadius: 4, padding: '2px 6px', fontSize: 10, fontFamily: 'Geist Mono, monospace', color: 'var(--color-text-muted)' }} aria-hidden="true">
       {children}
@@ -27,7 +27,7 @@ function scoreMatch(snip: Snippet, q: string): number {
   return 0;
 }
 
-export function SnippetPalette({ open, onClose, onInsert }: SnippetPaletteProps): React.ReactElement | null {
+export function SnippetPalette({ open, onClose, onInsert }: SnippetPaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState('');

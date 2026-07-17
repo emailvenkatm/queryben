@@ -12,7 +12,7 @@ interface StatementCardProps {
   onRevert: () => void;
 }
 
-export function StatementCard({ change, isFailed, onRevert }: StatementCardProps): React.ReactElement {
+export function StatementCard({ change, isFailed, onRevert }: StatementCardProps) {
   const accent = KIND_ACCENT[change.kind];
   return (
     <div style={{ borderRadius: 6, overflow: 'hidden', border: `1px solid ${isFailed ? 'rgba(220,38,38,0.5)' : 'rgba(244,239,231,0.08)'}`, borderLeft: `3px solid ${accent.band}`, background: isFailed ? 'rgba(220,38,38,0.06)' : 'transparent' }}>

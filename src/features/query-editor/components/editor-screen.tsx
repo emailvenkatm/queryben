@@ -25,7 +25,7 @@ import { ResultsGrid } from './results-grid';
 import { BrowseGrid } from './browse-grid';
 import { PendingChangesTray } from './pending-changes-tray';
 
-export function EditorScreen(): React.ReactElement {
+export function EditorScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTabId = searchParams.get('tab');
 

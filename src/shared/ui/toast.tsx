@@ -24,7 +24,7 @@ export function useToast(): ToastContextValue {
   return ctx;
 }
 
-export function ToastProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const show = (toast: Omit<Toast, 'id'>): void => {
@@ -63,7 +63,7 @@ function ToastList({
 }: {
   toasts: Toast[];
   onDismiss: (id: string) => void;
-}): React.ReactElement {
+}) {
   if (toasts.length === 0) return <></>;
   return (
     <div
@@ -85,7 +85,7 @@ function ToastItem({
 }: {
   toast: Toast;
   onDismiss: (id: string) => void;
-}): React.ReactElement {
+}) {
   const s = VARIANT_STYLES[toast.variant];
   const [visible, setVisible] = useState(false);
 

@@ -20,7 +20,7 @@ export function BrowseToolbar({
   metadataError,
   isLoading,
   onRefresh,
-}: BrowseToolbarProps): React.ReactElement {
+}: BrowseToolbarProps) {
   return (
     <div
       style={{ background: 'var(--color-bg)', borderBottom: '1px solid rgba(26,46,42,0.10)', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}

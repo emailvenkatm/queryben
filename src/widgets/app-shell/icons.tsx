@@ -1,6 +1,6 @@
 // Inline SVGs so lucide's viewBox drift can't shift icon alignment.
 
-export function IconConnections(): React.ReactElement {
+export function IconConnections() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3" />
@@ -9,7 +9,7 @@ export function IconConnections(): React.ReactElement {
   );
 }
 
-export function IconSettings(): React.ReactElement {
+export function IconSettings() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.3" />
@@ -18,7 +18,7 @@ export function IconSettings(): React.ReactElement {
   );
 }
 
-export function IconQueries(): React.ReactElement {
+export function IconQueries() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.3" />
@@ -27,7 +27,7 @@ export function IconQueries(): React.ReactElement {
   );
 }
 
-export function IconHistory(): React.ReactElement {
+export function IconHistory() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.3" />
@@ -36,7 +36,7 @@ export function IconHistory(): React.ReactElement {
   );
 }
 
-export function IconNotebook(): React.ReactElement {
+export function IconNotebook() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <rect x="3" y="2" width="10" height="12" rx="1.3" stroke="currentColor" strokeWidth="1.3" />
@@ -45,7 +45,7 @@ export function IconNotebook(): React.ReactElement {
   );
 }
 
-export function IconDiff(): React.ReactElement {
+export function IconDiff() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path d="M4 3v10M12 3v10M2 5l2-2 2 2M10 11l2 2 2-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -53,7 +53,7 @@ export function IconDiff(): React.ReactElement {
   );
 }
 
-export function IconDatabase(): React.ReactElement {
+export function IconDatabase() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
       <rect x="1" y="3" width="12" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4" />

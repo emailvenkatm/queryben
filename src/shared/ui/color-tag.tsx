@@ -41,7 +41,7 @@ export function NicknameColorFields({
   onNicknameChange,
   onColorChange,
   compact,
-}: NicknameColorFieldsProps): React.ReactElement {
+}: NicknameColorFieldsProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 10 : 14 }}>
       <div>
@@ -117,7 +117,7 @@ interface ConnectionDotProps {
   size?: number;
 }
 
-export function ConnectionDot({ color, size = 8 }: ConnectionDotProps): React.ReactElement | null {
+export function ConnectionDot({ color, size = 8 }: ConnectionDotProps) {
   if (!color) return null;
   return (
     <span

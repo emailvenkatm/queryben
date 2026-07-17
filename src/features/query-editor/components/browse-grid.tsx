@@ -25,7 +25,7 @@ function sqlTypeToColumnType(sqlType: string): ColumnType {
   return 'string';
 }
 
-function BrowseCellDisplay({ value }: { value: unknown }): React.ReactElement {
+function BrowseCellDisplay({ value }: { value: unknown }) {
   if (value === null || value === undefined) {
     return (
       <span style={{ display: 'inline-flex', fontFamily: 'Geist Mono, monospace', fontSize: 10, fontWeight: 600, color: 'rgba(26,46,42,0.35)', background: 'rgba(26,46,42,0.06)', border: '1px solid rgba(26,46,42,0.12)', borderRadius: 3, padding: '1px 5px', letterSpacing: '0.04em', fontStyle: 'italic' }}>
@@ -43,7 +43,7 @@ interface RowContextMenuProps {
   onDelete: () => void;
 }
 
-function RowContextMenu({ x, y, canDelete, onDelete }: RowContextMenuProps): React.ReactElement {
+function RowContextMenu({ x, y, canDelete, onDelete }: RowContextMenuProps) {
   return (
     <div role="menu" style={{ position: 'fixed', left: x, top: y, zIndex: 50, minWidth: 160, borderRadius: 6, border: '1px solid rgba(26,46,42,0.14)', background: '#fff', boxShadow: '0 4px 16px rgba(26,46,42,0.14)', padding: '4px 0' }}>
       <button
@@ -78,7 +78,7 @@ export function BrowseGrid({
   browseTable,
   isLoading = false,
   onRefresh,
-}: BrowseGridProps): React.ReactElement {
+}: BrowseGridProps) {
   const [metadata, setMetadata] = useState<TableMetadata | null>(null);
   const [metadataError, setMetadataError] = useState<string | null>(null);
   const [editing, setEditing] = useState<{ rowId: string; columnName: string } | null>(null);

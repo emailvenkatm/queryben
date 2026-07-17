@@ -1,7 +1,7 @@
 import { Providers } from '@/app/providers';
 import { Router } from '@/app/router';
 
-export function App(): React.ReactElement {
+export function App() {
   return (
     <Providers>
       <Router />

@@ -1,4 +1,4 @@
-function Kbd({ children, light }: { children: React.ReactNode; light?: boolean }): React.ReactElement {
+function Kbd({ children, light }: { children: React.ReactNode; light?: boolean }) {
   return (
     <span
       style={{ background: light ? 'rgba(255,255,255,0.15)' : 'rgba(26,46,42,0.07)', borderRadius: 3, padding: '1px 5px', fontSize: 10, fontFamily: 'Geist Mono, monospace', color: light ? 'rgba(255,255,255,0.6)' : 'var(--color-text-muted)' }}
@@ -9,7 +9,7 @@ function Kbd({ children, light }: { children: React.ReactNode; light?: boolean }
   );
 }
 
-function Sep(): React.ReactElement {
+function Sep() {
   return <span style={{ width: 1, height: 18, background: 'rgba(26,46,42,0.10)', margin: '0 4px', flexShrink: 0 }} aria-hidden="true" />;
 }
 
@@ -20,7 +20,7 @@ interface TBtnProps {
   ariaLabel?: string;
 }
 
-function TBtn({ onClick, disabled, children, ariaLabel }: TBtnProps): React.ReactElement {
+function TBtn({ onClick, disabled, children, ariaLabel }: TBtnProps) {
   return (
     <button
       type="button"
@@ -48,7 +48,7 @@ interface EditorToolbarProps {
   onOpenSnippets: () => void;
 }
 
-export function EditorToolbar({ isPending, hasConnection, onRun, onCancel, onExplain, onToggleAi, aiOpen, onSaveQuery, onOpenSnippets }: EditorToolbarProps): React.ReactElement {
+export function EditorToolbar({ isPending, hasConnection, onRun, onCancel, onExplain, onToggleAi, aiOpen, onSaveQuery, onOpenSnippets }: EditorToolbarProps) {
   return (
     <div style={{ background: 'var(--color-bg)', borderBottom: '1px solid rgba(26,46,42,0.08)', padding: '7px 16px', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }} role="toolbar" aria-label="Query editor toolbar">
       <button
