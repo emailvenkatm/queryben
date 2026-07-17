@@ -7,8 +7,8 @@ import type { AiMessage } from '../types';
 export function extractSqlBlock(text: string): string | undefined {
   const sql = /```sql\s*\n([\s\S]*?)```/i.exec(text);
   if (sql?.[1]) return sql[1].trim();
-  const any = /```\s*\n([\s\S]*?)```/.exec(text);
-  if (any?.[1]) return any[1].trim();
+  const generic = /```\s*\n([\s\S]*?)```/.exec(text);
+  if (generic?.[1]) return generic[1].trim();
   return undefined;
 }
 
