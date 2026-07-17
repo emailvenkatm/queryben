@@ -40,7 +40,7 @@ export function SettingsScreen() {
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '32px 48px', maxWidth: 760 }}>
           <Section id="theme" title="Theme" desc="Pick a palette. Switching is instant — every color in the app resolves through it.">
-            <PaletteCustomizer presetIdForReset="default" />
+            <PaletteCustomizer />
           </Section>
 
           <Section id="general" title="General">
