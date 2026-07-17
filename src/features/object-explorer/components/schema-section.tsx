@@ -2,18 +2,25 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TreeNode, LeafNode } from './tree-node';
 import { ObjectContextMenu } from './object-context-menu';
+import { ObjectScriptDialog } from './ObjectScriptDialog';
 import { useActiveConnectionStore } from '@/shared/stores/active-connection';
 import { useOpenTabsStore } from '@/shared/stores/open-tabs';
+import { useObjectScripter } from '@/features/object-scripter';
+import { formatAppErrorForDisplay } from '@/shared/api/errors';
 import type { SchemaNode } from '@/shared/types';
 import type { ObjectContextTarget, ScriptAction } from '../types';
-
-// TODO: wire to object-scripter feature when ported
-type ScriptObjectKind = 'table' | 'view' | 'procedure' | 'function';
+import type { ScriptObjectKind } from '@/features/object-scripter';
 
 interface ContextMenuState {
   x: number;
   y: number;
   target: ObjectContextTarget;
+}
+
+interface ScriptDialogState {
+  objectName: string;
+  ddl: string;
+  error: string | null;
 }
 
 function SchemaIcon() {
@@ -86,8 +93,10 @@ export function SchemaSection({ schema, filter }: SchemaSectionProps) {
   const activeConnectionId = useActiveConnectionStore((s) => s.activeConnectionId);
   const setActiveConnection = useActiveConnectionStore((s) => s.setActiveConnection);
   const openTab = useOpenTabsStore((s) => s.openTab);
+  const scripter = useObjectScripter();
 
   const [menu, setMenu] = useState<ContextMenuState | null>(null);
+  const [scriptDialog, setScriptDialog] = useState<ScriptDialogState | null>(null);
 
   const openSelectTop100 = (schemaName: string, objectName: string, isTable: boolean): void => {
     if (!activeConnectionId) return;
@@ -121,10 +130,27 @@ export function SchemaSection({ schema, filter }: SchemaSectionProps) {
     navigate(`/designer/${activeConnectionId}/${schemaName}/NewTable?new=1`);
   };
 
-  const handleScriptAs = async (kind: ScriptObjectKind, schemaName: string, objectName: string, action: ScriptAction): Promise<void> => {
+  const handleScriptAs = async (
+    kind: ScriptObjectKind,
+    schemaName: string,
+    objectName: string,
+    action: ScriptAction,
+  ): Promise<void> => {
     if (!activeConnectionId) return;
-    // TODO wire to object-scripter feature when ported
-    console.warn('script_object: object-scripter not yet ported', { kind, schemaName, objectName, action });
+    const label = `${schemaName}.${objectName}`;
+    try {
+      const ddl = await scripter.mutateAsync({
+        connectionId: activeConnectionId,
+        kind,
+        schema: schemaName,
+        name: objectName,
+        table: null,
+        action,
+      });
+      setScriptDialog({ objectName: label, ddl, error: null });
+    } catch (err) {
+      setScriptDialog({ objectName: label, ddl: '', error: formatAppErrorForDisplay(err) });
+    }
   };
 
   return (
@@ -189,6 +215,15 @@ export function SchemaSection({ schema, filter }: SchemaSectionProps) {
           onNewTable={menu.target.kind === 'schema' ? () => handleNewTable(menu.target.schema) : undefined}
           onImportData={menu.target.kind === 'table' || menu.target.kind === 'schema' ? () => {} : undefined}
           onScriptAs={menu.target.kind === 'schema' ? undefined : (action) => void handleScriptAs(menu.target.kind as ScriptObjectKind, menu.target.schema, menu.target.name, action)}
+        />
+      )}
+
+      {scriptDialog && (
+        <ObjectScriptDialog
+          objectName={scriptDialog.objectName}
+          ddl={scriptDialog.ddl}
+          error={scriptDialog.error}
+          onClose={() => setScriptDialog(null)}
         />
       )}
     </>
