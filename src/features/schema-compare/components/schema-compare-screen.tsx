@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { formatAppErrorForDisplay } from '@/shared/api/errors';
+import { useConnections } from '@/features/connections';
 import type { DdlStatement, ObjectChange, SchemaDiff, SchemaSnapshot } from '../types';
 import { useSchemaDdl, useSchemaDiff, useSchemaSnapshot } from '../hooks/use-schema-compare';
 import { DiffTree } from './DiffTree';
@@ -39,11 +40,13 @@ function ConnectionPicker({
   );
 }
 
-interface Props {
-  connections: ConnOption[];
-}
-
-export function SchemaCompareScreen({ connections }: Props) {
+export function SchemaCompareScreen() {
+  const connectionsQuery = useConnections();
+  const connections: ConnOption[] = (connectionsQuery.data ?? []).map((c) => ({
+    id: c.id,
+    name: c.name,
+    database: c.database,
+  }));
   const [sourceId, setSourceId] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
   const [diff, setDiff] = useState<SchemaDiff | null>(null);
