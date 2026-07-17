@@ -52,10 +52,7 @@ export function EditorScreen() {
     return executeError.message as unknown as FirewallBlockedPayload;
   }, [executeError]);
 
-  const firewallPayload = useMemo<FirewallBlockedPayload | null>(() => {
-    if (firewallDismissed || autoSilentActive) return null;
-    return rawFirewall;
-  }, [rawFirewall, firewallDismissed, autoSilentActive]);
+  const firewallPayload = firewallDismissed || autoSilentActive ? null : rawFirewall;
 
   useEffect(() => { setFirewallDismissed(false); }, [executeError]);
 

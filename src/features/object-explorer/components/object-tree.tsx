@@ -34,10 +34,7 @@ export function ObjectTree() {
     return error.message;
   }, [error]);
 
-  const firewallPayload = useMemo<FirewallBlockedPayload | null>(() => {
-    if (firewallDismissed || autoSilentActive) return null;
-    return rawFirewall;
-  }, [rawFirewall, firewallDismissed, autoSilentActive]);
+  const firewallPayload = firewallDismissed || autoSilentActive ? null : rawFirewall;
 
   useEffect(() => { setFirewallDismissed(false); }, [error]);
 
