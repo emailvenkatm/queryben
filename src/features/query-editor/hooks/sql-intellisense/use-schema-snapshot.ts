@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { schemaKeys } from '@/features/object-explorer';
 import type { SchemaInfo, TableMetadata } from '@/shared/types';
 
 export interface SnapshotColumn {
@@ -19,11 +20,6 @@ export interface SqlSchemaSnapshot {
 }
 
 const EMPTY: SqlSchemaSnapshot = { tables: [], allColumns: [] };
-
-// TODO: import schemaKeys from @/features/object-explorer when that feature lands
-const schemaKeys = {
-  byConnection: (id: string) => ['schema', id] as const,
-};
 
 export function useSchemaSnapshot(connectionId: string | null): SqlSchemaSnapshot {
   const qc = useQueryClient();
