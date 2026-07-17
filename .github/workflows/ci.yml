@@ -1,0 +1,107 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel in-flight runs when a PR is pushed again. The full matrix is slow;
+# no point burning minutes on outdated commits.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    # fail-fast=false so a red mac leg doesn't hide a red windows leg.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-arm64
+            os: macos-14
+            rust-target: aarch64-apple-darwin
+          - name: macos-x86_64
+            os: macos-13
+            rust-target: x86_64-apple-darwin
+          - name: windows-x86_64
+            os: windows-latest
+            rust-target: x86_64-pc-windows-msvc
+          - name: linux-x86_64
+            os: ubuntu-22.04
+            rust-target: x86_64-unknown-linux-gnu
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      # Linux tauri build brings in webkit + system libs; even `cargo check`
+      # links against them because the crate graph pulls in webkit-sys.
+      - name: install linux deps
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: install rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      # Cache cargo registry + git deps separately from build output.
+      # Build output cache is keyed on Cargo.lock so a lock bump busts it,
+      # but flake8-of-a-file-change won't. Cross-OS caches never share.
+      - name: cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: src-tauri/target
+          key: ${{ runner.os }}-${{ matrix.rust-target }}-cargo-target-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.rust-target }}-cargo-target-
+
+      - name: install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: run tsc
+        run: pnpm tsc --noEmit
+
+      - name: cargo check
+        run: cargo check --manifest-path src-tauri/Cargo.toml --target ${{ matrix.rust-target }}
+
+      - name: cargo test lib
+        run: cargo test --manifest-path src-tauri/Cargo.toml --lib --target ${{ matrix.rust-target }}
+
+      # Integration tests. `needs_real_keychain` is the ignore filter for the
+      # small set of tests that require a Developer-ID-signed test binary +
+      # real keychain access — CI runners can't satisfy either.
+      - name: cargo test integration
+        run: cargo test --manifest-path src-tauri/Cargo.toml --tests --target ${{ matrix.rust-target }} -- --skip needs_real_keychain
