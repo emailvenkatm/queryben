@@ -4,9 +4,8 @@
 
 use std::collections::BTreeMap;
 
-use uuid::Uuid;
-
 use crate::adapters::mssql;
+use crate::core::ids::ConnectionId;
 use crate::core::schema::{RoutineInfo, SchemaInfo, SchemaNode, TableInfo};
 use crate::error::AppError;
 use crate::state::AppState;
@@ -150,37 +149,39 @@ fn empty_node(name: &str) -> SchemaNode {
 
 pub async fn get_schema(
     state: &AppState,
-    connection_id: Uuid,
+    connection_id: ConnectionId,
 ) -> Result<SchemaInfo, AppError> {
-    tracing::info!(target: "queryben::get-schema", %connection_id, "entry");
-    let snapshot = state.registry.snapshot(connection_id)?;
+    let uuid = connection_id.as_uuid();
+    tracing::info!(target: "queryben::get-schema", connection_id = %uuid, "entry");
+    let snapshot = state.registry.snapshot(uuid)?;
     let input = reopen_input(state, snapshot).await?;
-    tracing::info!(target: "queryben::get-schema", %connection_id, "connecting");
-    let mut client = mssql::connect_for_connection(&input, connection_id).await?;
-    tracing::info!(target: "queryben::get-schema", %connection_id, "connected, introspecting");
+    tracing::info!(target: "queryben::get-schema", connection_id = %uuid, "connecting");
+    let mut client = mssql::connect_for_connection(&input, uuid).await?;
+    tracing::info!(target: "queryben::get-schema", connection_id = %uuid, "connected, introspecting");
     let schemas = introspect_all(&mut client, None).await.map_err(|e| {
-        tracing::error!(target: "queryben::get-schema", %connection_id, error = %e, "introspection failed");
+        tracing::error!(target: "queryben::get-schema", connection_id = %uuid, error = %e, "introspection failed");
         e
     })?;
-    tracing::info!(target: "queryben::get-schema", %connection_id, count = schemas.len(), "done");
-    state.registry.mark_used(connection_id).ok();
+    tracing::info!(target: "queryben::get-schema", connection_id = %uuid, count = schemas.len(), "done");
+    state.registry.mark_used(uuid).ok();
     Ok(SchemaInfo {
-        connection_id,
+        connection_id: uuid,
         schemas,
     })
 }
 
 pub async fn list_tables(
     state: &AppState,
-    connection_id: Uuid,
+    connection_id: ConnectionId,
     schema: String,
 ) -> Result<Vec<TableInfo>, AppError> {
-    tracing::info!(target: "queryben::list-tables", %connection_id, %schema);
-    let snapshot = state.registry.snapshot(connection_id)?;
+    let uuid = connection_id.as_uuid();
+    tracing::info!(target: "queryben::list-tables", connection_id = %uuid, %schema);
+    let snapshot = state.registry.snapshot(uuid)?;
     let input = reopen_input(state, snapshot).await?;
-    let mut client = mssql::connect_for_connection(&input, connection_id).await?;
+    let mut client = mssql::connect_for_connection(&input, uuid).await?;
     let nodes = introspect_all(&mut client, Some(&schema)).await?;
-    state.registry.mark_used(connection_id).ok();
+    state.registry.mark_used(uuid).ok();
     // Frontend wants just this schema's tables (not views/procs/fns).
     Ok(nodes
         .into_iter()

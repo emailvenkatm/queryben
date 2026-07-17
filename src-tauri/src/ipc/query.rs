@@ -41,7 +41,7 @@ pub async fn get_schema(
     state: State<'_, AppState>,
     connection_id: Uuid,
 ) -> Result<SchemaInfo, AppError> {
-    app::introspect::get_schema(&state, connection_id).await
+    app::introspect::get_schema(&state, connection_id.into()).await
 }
 
 #[tauri::command]
@@ -51,7 +51,7 @@ pub async fn list_tables(
     connection_id: Uuid,
     schema: String,
 ) -> Result<Vec<TableInfo>, AppError> {
-    app::introspect::list_tables(&state, connection_id, schema).await
+    app::introspect::list_tables(&state, connection_id.into(), schema).await
 }
 
 #[tauri::command]
@@ -62,7 +62,7 @@ pub async fn get_table_metadata(
     schema: String,
     name: String,
 ) -> Result<TableMetadata, AppError> {
-    app::introspect::get_table_metadata(&state, connection_id, schema, name).await
+    app::introspect::get_table_metadata(&state, connection_id.into(), schema, name).await
 }
 
 #[tauri::command]

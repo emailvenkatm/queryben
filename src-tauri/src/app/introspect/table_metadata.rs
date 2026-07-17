@@ -2,9 +2,9 @@
 //! one PK column exists.
 
 use tiberius::Query;
-use uuid::Uuid;
 
 use crate::adapters::mssql;
+use crate::core::ids::ConnectionId;
 use crate::core::schema::{TableColumn, TableMetadata};
 use crate::error::AppError;
 use crate::state::AppState;
@@ -15,31 +15,32 @@ use crate::app::session::reopen_input;
 
 pub async fn get_table_metadata(
     state: &AppState,
-    connection_id: Uuid,
+    connection_id: ConnectionId,
     schema: String,
     name: String,
 ) -> Result<TableMetadata, AppError> {
+    let uuid = connection_id.as_uuid();
     tracing::info!(
         target: "queryben::get-table-metadata",
-        %connection_id,
+        connection_id = %uuid,
         %schema,
         %name,
         "entry"
     );
 
-    let snapshot = state.registry.snapshot(connection_id)?;
+    let snapshot = state.registry.snapshot(uuid)?;
     let input = reopen_input(state, snapshot).await?;
-    let mut client = mssql::connect_for_connection(&input, connection_id).await?;
+    let mut client = mssql::connect_for_connection(&input, uuid).await?;
 
     let columns = load_columns(&mut client, &schema, &name).await?;
     let primary_key = load_primary_key(&mut client, &schema, &name).await?;
 
-    state.registry.mark_used(connection_id).ok();
+    state.registry.mark_used(uuid).ok();
 
     let is_editable = !primary_key.is_empty();
     tracing::info!(
         target: "queryben::get-table-metadata",
-        %connection_id,
+        connection_id = %uuid,
         %schema,
         %name,
         columns = columns.len(),
