@@ -1,21 +1,23 @@
+import { useActiveConnectionStore } from '@/shared/stores/active-connection';
+import { useConnections } from '@/features/connections';
 import { useNotebookScreen } from '../hooks/use-notebook-screen';
 import { NotebookCell } from './NotebookCell';
 import { NotebookSidebar } from './NotebookSidebar';
 import { NotebookToolbar } from './NotebookToolbar';
 
-// TODO: wire from connections store once that feature ships its index.ts
-const STUB_CONN: string | null = null;
-
 export function NotebookScreen() {
   const nb = useNotebookScreen();
-  const connectionId = nb.draft?.metadata.connectionId ?? STUB_CONN;
+  const activeConnectionId = useActiveConnectionStore((s) => s.activeConnectionId);
+  const connectionsQuery = useConnections();
+  const connections = (connectionsQuery.data ?? []).map((c) => ({ id: c.id, name: c.name }));
+  const connectionId = nb.draft?.metadata.connectionId ?? activeConnectionId;
 
   return (
     <div style={{ display: 'flex', flex: 1, minHeight: 0, background: 'var(--color-bg)' }}>
       <NotebookSidebar
         selectedId={nb.selectedId}
         onSelect={nb.select}
-        onCreate={() => nb.create(STUB_CONN)}
+        onCreate={() => nb.create(activeConnectionId)}
       />
 
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
@@ -42,7 +44,7 @@ export function NotebookScreen() {
               title={nb.draft.metadata.title ?? nb.selectedId ?? 'Untitled'}
               onRename={(t) => void nb.rename(t)}
               renameBusy={nb.isRenaming}
-              connections={[]}
+              connections={connections}
               connectionId={connectionId}
               onConnectionChange={nb.setConnection}
               onSave={() => void nb.save()}
