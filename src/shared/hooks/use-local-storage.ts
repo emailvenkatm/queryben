@@ -15,7 +15,7 @@ export function useLocalStorage<T>(
     }
   });
 
-  const setValue = (value: T | ((prev: T) => T)): void => {
+  const setValue = (value: T | ((prev: T) => T)) => {
     setStoredValue((prev) => {
       const next = typeof value === 'function' ? (value as (p: T) => T)(prev) : value;
       try {

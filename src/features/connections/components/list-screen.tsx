@@ -74,7 +74,7 @@ export function ListScreen({ onAddConnection }: ListScreenProps) {
     connections.map((c) => c.environment).filter((e): e is Environment => e !== undefined),
   ).size;
 
-  const handleConnect = (conn: Connection): void => {
+  const handleConnect = (conn: Connection) => {
     setActiveConnection(conn.id);
     const tabId = openTab({
       id: crypto.randomUUID(),

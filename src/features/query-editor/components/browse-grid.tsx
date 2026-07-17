@@ -130,13 +130,13 @@ export function BrowseGrid({
   const { isEditable, handleCommitEdit, handleInsertCellCommit, handleDeleteRow, rowIdForIdx } =
     useBrowseMutations({ tabId, metadata, rows: displayRows as unknown[][], columns: displayColumns, insertRows });
 
-  const handleAddRow = useCallback((): void => {
+  const handleAddRow = useCallback(() => {
     if (!metadata || !isEditable) return;
     setInsertRows((rows) => [...rows, { rowId: `new-${crypto.randomUUID()}`, values: {} }]);
   }, [isEditable, metadata]);
 
   const handleInsertCommitWithState = useCallback(
-    (rowId: string, columnName: string, next: typeof NULL_SENTINEL | string): void => {
+    (rowId: string, columnName: string, next: typeof NULL_SENTINEL | string) => {
       handleInsertCellCommit(rowId, columnName, next);
       setInsertRows((rows) =>
         rows.map((r) => {
@@ -149,7 +149,7 @@ export function BrowseGrid({
     [handleInsertCellCommit],
   );
 
-  const handleRowContext = useCallback((evt: React.MouseEvent, rowIdx: number): void => {
+  const handleRowContext = useCallback((evt: React.MouseEvent, rowIdx: number) => {
     evt.preventDefault();
     contextMenuRowIdx.current = rowIdx;
     setContextMenu({ x: evt.clientX, y: evt.clientY });
@@ -157,7 +157,7 @@ export function BrowseGrid({
 
   useEffect(() => {
     if (!contextMenu) return;
-    const handler = (): void => setContextMenu(null);
+    const handler = () => setContextMenu(null);
     document.addEventListener('click', handler);
     return () => document.removeEventListener('click', handler);
   }, [contextMenu]);

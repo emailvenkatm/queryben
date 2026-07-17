@@ -69,7 +69,7 @@ export function useTableDesigner(): UseTableDesignerReturn {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [next, current, connectionId]);
 
-  const togglePk = (col: string): void => {
+  const togglePk = (col: string) => {
     setNext((prev) => {
       if (!prev) return prev;
       const already = prev.primaryKey.includes(col);
@@ -77,7 +77,7 @@ export function useTableDesigner(): UseTableDesignerReturn {
     });
   };
 
-  const apply = (): void => {
+  const apply = () => {
     if (!connectionId || ddl.length === 0) return;
     setApplyError(null);
     setApplyOk(null);

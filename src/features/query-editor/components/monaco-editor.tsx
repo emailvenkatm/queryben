@@ -20,7 +20,7 @@ export function MonacoEditor({ value, onChange, onRun }: MonacoEditorProps) {
 
   useEffect(() => { updateSchemaSnapshot(snapshot); }, [snapshot]);
 
-  const handleMount = (editor: unknown, monaco: unknown): void => {
+  const handleMount = (editor: unknown, monaco: unknown) => {
     editorRef.current = editor;
     if (monaco) registerSqlCompletions(monaco as Parameters<typeof registerSqlCompletions>[0]);
     if (onRun && editor && typeof editor === 'object' && 'addAction' in editor) {

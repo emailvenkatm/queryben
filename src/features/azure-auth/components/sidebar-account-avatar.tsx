@@ -65,17 +65,17 @@ export function SidebarAccountAvatar() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const close = (): void => {
+  const close = () => {
     setOpen(false);
     setSwitcherOpen(false);
   };
 
   useEffect(() => {
     if (!open) return;
-    const onDocDown = (e: MouseEvent): void => {
+    const onDocDown = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) close();
     };
-    const onKey = (e: KeyboardEvent): void => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { close(); buttonRef.current?.focus(); }
     };
     document.addEventListener('mousedown', onDocDown);

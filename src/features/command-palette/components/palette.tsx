@@ -74,7 +74,7 @@ export function Palette({ open, onOpenChange }: PaletteProps) {
   const [exportOpen, setExportOpen] = useState(false);
   const { hasResults, copy } = useResultsStub();
 
-  const close = (): void => {
+  const close = () => {
     onOpenChange(false);
     setQuery('');
   };
@@ -87,7 +87,7 @@ export function Palette({ open, onOpenChange }: PaletteProps) {
   }, [open]);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent): void => { if (e.key === 'Escape') close(); };
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   });

@@ -41,7 +41,7 @@ export function usePaletteCommands({ query, onClose, onExport, onCopy, hasResult
     );
   });
 
-  const connectTo = (conn: Connection): void => {
+  const connectTo = (conn: Connection) => {
     setActiveConnection(conn.id);
     const tabId = openTab({
       id: crypto.randomUUID(),

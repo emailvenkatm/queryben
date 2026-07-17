@@ -53,11 +53,11 @@ export function CellEditor({
     return () => cancelAnimationFrame(raf);
   }, [inputType]);
 
-  const commit = (): void => {
+  const commit = () => {
     onCommit(isNull ? NULL_SENTINEL : text);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key.toLowerCase() === 'n' && (e.metaKey || e.ctrlKey) && e.shiftKey) {
       e.preventDefault();
       setIsNull(true);
@@ -112,7 +112,7 @@ export function InsertCellInput({ value, sqlType, isNullable, columnName, onComm
   const [isNull, setIsNull] = useState(value === null);
   const [focused, setFocused] = useState(false);
 
-  const commit = (raw: string, nullFlag: boolean): void => {
+  const commit = (raw: string, nullFlag: boolean) => {
     if (nullFlag) onCommit(NULL_SENTINEL);
     else if (raw !== '') onCommit(raw);
   };

@@ -12,10 +12,10 @@ const TH: React.CSSProperties = { ...CELL, fontFamily: 'Geist Mono, monospace', 
 const INPUT: React.CSSProperties = { width: '100%', padding: '3px 6px', fontFamily: 'Geist Mono, monospace', fontSize: 12, border: '1px solid rgba(26,46,42,0.14)', borderRadius: 4, background: 'var(--color-bg)', color: 'var(--color-text)' };
 
 export function ColumnList({ columns, primaryKey, onChange, onTogglePk }: Props) {
-  const patch = (idx: number, delta: Partial<DesignColumn>): void =>
+  const patch = (idx: number, delta: Partial<DesignColumn>) =>
     onChange(columns.map((c, i) => (i === idx ? { ...c, ...delta } : c)));
-  const remove = (idx: number): void => onChange(columns.filter((_, i) => i !== idx));
-  const add = (): void => onChange([...columns, { name: `Column${columns.length + 1}`, sqlType: 'nvarchar(255)', isNullable: true, isIdentity: false, isComputed: false, computedExpression: null, defaultExpression: null, ordinal: columns.length }]);
+  const remove = (idx: number) => onChange(columns.filter((_, i) => i !== idx));
+  const add = () => onChange([...columns, { name: `Column${columns.length + 1}`, sqlType: 'nvarchar(255)', isNullable: true, isIdentity: false, isComputed: false, computedExpression: null, defaultExpression: null, ordinal: columns.length }]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

@@ -11,7 +11,7 @@ const TD: React.CSSProperties = { padding: '6px 10px', verticalAlign: 'top' };
 const INPUT: React.CSSProperties = { width: '100%', padding: '5px 8px', fontSize: 12, fontFamily: 'Geist Mono, monospace', border: '1px solid rgba(42,87,81,0.14)', borderRadius: 4, background: '#fff', color: 'var(--color-primary)' };
 
 export function StepMapping({ mapping, onChange }: Props) {
-  const patch = (i: number, delta: Partial<ColumnMap>): void => {
+  const patch = (i: number, delta: Partial<ColumnMap>) => {
     onChange(mapping.map((m, idx) => (idx === i ? { ...m, ...delta } : m)));
   };
 

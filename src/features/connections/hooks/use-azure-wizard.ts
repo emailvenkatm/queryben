@@ -51,7 +51,7 @@ export function useAzureWizard(isAuthenticated: boolean, onSuccess: () => void):
     if (first) setActiveAccountIdRaw(first.accountId);
   }, [activeAccountId, currentAccountQuery.data, accountsQuery.data]);
 
-  const setActiveAccountId = (id: string | null): void => {
+  const setActiveAccountId = (id: string | null) => {
     setActiveAccountIdRaw(id);
     setSubscription(null);
     setServer(null);
@@ -67,12 +67,12 @@ export function useAzureWizard(isAuthenticated: boolean, onSuccess: () => void):
     : !server ? 'server'
     : 'database';
 
-  const pickSubscription = (sub: AzureSubscription): void => {
+  const pickSubscription = (sub: AzureSubscription) => {
     setSubscription(sub);
     setServer(null);
   };
 
-  const pickServer = (s: AzureSqlServer): void => {
+  const pickServer = (s: AzureSqlServer) => {
     setServer(s);
   };
 
@@ -132,7 +132,7 @@ export function useAzureWizard(isAuthenticated: boolean, onSuccess: () => void):
     }
   };
 
-  const goBack = (): void => {
+  const goBack = () => {
     if (step === 'database') { setServer(null); return; }
     if (step === 'server') { setSubscription(null); return; }
   };

@@ -127,9 +127,9 @@ export function EditorScreen() {
     setTimeout(() => setCommitToast(null), 2000);
   }, [refetchBrowse]);
 
-  const handleTabChange = (tabId: string): void => { setActiveTab(tabId); setSearchParams({ tab: tabId }); };
+  const handleTabChange = (tabId: string) => { setActiveTab(tabId); setSearchParams({ tab: tabId }); };
 
-  const handleTabClose = (tabId: string): void => {
+  const handleTabClose = (tabId: string) => {
     clearPendingForTab(tabId);
     closeTab(tabId);
     const nextTab = tabs.find((t) => t.id !== tabId);
@@ -137,7 +137,7 @@ export function EditorScreen() {
     else setSearchParams({});
   };
 
-  const handleNewTab = (): void => {
+  const handleNewTab = () => {
     const connectionId = activeTab?.connectionId ?? activeConnectionId;
     if (!connectionId) return;
     const focusedId = openTab({ id: crypto.randomUUID(), connectionId, title: 'New query', sql: '', isDirty: false, createdAt: new Date().toISOString() });
@@ -164,7 +164,7 @@ export function EditorScreen() {
   }, [activeTabId, activeTab?.sql, updateTabSql]);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent): void => {
+    const handler = (e: KeyboardEvent) => {
       if (!e.shiftKey || !(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'p') return;
       e.preventDefault();
       setSnippetsOpen((v) => !v);
@@ -183,7 +183,7 @@ export function EditorScreen() {
     );
   }
 
-  const handleRun = (): void => {
+  const handleRun = () => {
     if (!activeConnectionId || !activeTabId) return;
     void execute({ connectionId: activeConnectionId, sql: activeTab.sql, tabId: activeTabId });
   };

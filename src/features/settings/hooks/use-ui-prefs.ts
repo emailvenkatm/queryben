@@ -20,7 +20,7 @@ function save(prefs: UiPrefs): void {
 export function useUiPrefs(): { prefs: UiPrefs; update: (delta: Partial<UiPrefs>) => void } {
   const [prefs, setPrefs] = useState<UiPrefs>(load);
 
-  const update = (delta: Partial<UiPrefs>): void => {
+  const update = (delta: Partial<UiPrefs>) => {
     setPrefs((prev) => {
       const next = { ...prev, ...delta };
       save(next);

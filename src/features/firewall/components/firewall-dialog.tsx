@@ -60,7 +60,7 @@ export function FirewallDialog({ payload, onClose, onRetry }: FirewallDialogProp
 
   const subnet = toSubnetRange(payload.ip);
 
-  const handleScopeChange = (val: boolean): void => {
+  const handleScopeChange = (val: boolean) => {
     setUseSubnet(val);
     savePreferSubnet(val);
   };

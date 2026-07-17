@@ -46,11 +46,11 @@ export function SingleResultGrid({ result, target, onExportRow }: { result: Quer
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; rowIdx: number } | null>(null);
   const [contextCellIdx, setContextCellIdx] = useState<number | undefined>(undefined);
 
-  const handleRowClick = useCallback((rowIdx: number, evt: React.MouseEvent): void => {
+  const handleRowClick = useCallback((rowIdx: number, evt: React.MouseEvent) => {
     toggleRow(rowIdx, evt.metaKey || evt.ctrlKey);
   }, [toggleRow]);
 
-  const handleContextMenu = useCallback((evt: React.MouseEvent, rowIdx: number, cellIdx?: number): void => {
+  const handleContextMenu = useCallback((evt: React.MouseEvent, rowIdx: number, cellIdx?: number) => {
     evt.preventDefault();
     setContextCellIdx(cellIdx);
     setContextMenu({ x: evt.clientX, y: evt.clientY, rowIdx });
@@ -130,8 +130,8 @@ export function ResultsGrid({ outcome, browseTable, sql }: ResultsGridProps) {
   const exportColumns = first?.columns ?? [];
   const exportRows = exportRow !== null && first?.rows[exportRow] ? [first.rows[exportRow]!] : first?.rows ?? [];
 
-  const closeExport = (): void => { setExportOpen(false); setExportRow(null); };
-  const openRowExport = (rowIdx: number): void => { setExportRow(rowIdx); setExportOpen(true); };
+  const closeExport = () => { setExportOpen(false); setExportRow(null); };
+  const openRowExport = (rowIdx: number) => { setExportRow(rowIdx); setExportOpen(true); };
 
   if (resultSets.length === 0) {
     return (

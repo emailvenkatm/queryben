@@ -36,7 +36,7 @@ export function useResultsTable(result: QueryResult): UseResultsTableReturn {
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const toggleRow = (idx: number, multi: boolean): void => {
+  const toggleRow = (idx: number, multi: boolean) => {
     setSelectedRows((prev) => {
       if (multi) {
         const next = new Set(prev);

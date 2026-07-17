@@ -79,7 +79,7 @@ export function useImport({ isOpen, connectionId, defaultSchema, defaultTable, o
     setResult(null);
   }, [isOpen, defaultSchema, defaultTable]);
 
-  const pickFile = (): void => {
+  const pickFile = () => {
     setErrorMsg(null);
     void (async () => {
       try {
@@ -117,7 +117,7 @@ export function useImport({ isOpen, connectionId, defaultSchema, defaultTable, o
     })();
   };
 
-  const runImport = (): void => {
+  const runImport = () => {
     if (!connectionId || !path) return;
     setErrorMsg(null);
     void (async () => {

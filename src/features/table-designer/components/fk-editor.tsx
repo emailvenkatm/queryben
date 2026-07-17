@@ -13,10 +13,10 @@ const ACTIONS = ['', 'NO ACTION', 'CASCADE', 'SET NULL', 'SET DEFAULT'] as const
 const csv = (s: string): string[] => s.split(',').map((p) => p.trim()).filter((p) => p.length > 0);
 
 export function FkEditor({ foreignKeys, availableColumns, onChange }: Props) {
-  const patch = (i: number, d: Partial<DesignForeignKey>): void =>
+  const patch = (i: number, d: Partial<DesignForeignKey>) =>
     onChange(foreignKeys.map((fk, k) => (k === i ? { ...fk, ...d } : fk)));
-  const remove = (i: number): void => onChange(foreignKeys.filter((_, k) => k !== i));
-  const add = (): void => onChange([...foreignKeys, { name: `FK_${foreignKeys.length + 1}`, columns: availableColumns.slice(0, 1), referencedSchema: 'dbo', referencedTable: '', referencedColumns: [''], onDelete: null, onUpdate: null }]);
+  const remove = (i: number) => onChange(foreignKeys.filter((_, k) => k !== i));
+  const add = () => onChange([...foreignKeys, { name: `FK_${foreignKeys.length + 1}`, columns: availableColumns.slice(0, 1), referencedSchema: 'dbo', referencedTable: '', referencedColumns: [''], onDelete: null, onUpdate: null }]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

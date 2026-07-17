@@ -27,7 +27,7 @@ export function useToast(): ToastContextValue {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const show = (toast: Omit<Toast, 'id'>): void => {
+  const show = (toast: Omit<Toast, 'id'>) => {
     const id = crypto.randomUUID();
     setToasts((prev) => [...prev, { ...toast, id }]);
     setTimeout(() => {
@@ -35,7 +35,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, toast.duration ?? 5000);
   };
 
-  const dismiss = (id: string): void => {
+  const dismiss = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 

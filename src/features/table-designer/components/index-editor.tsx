@@ -11,11 +11,11 @@ const TH: React.CSSProperties = { ...CELL, fontFamily: 'Geist Mono, monospace', 
 const INPUT: React.CSSProperties = { width: '100%', padding: '3px 6px', fontFamily: 'Geist Mono, monospace', fontSize: 12, border: '1px solid rgba(26,46,42,0.14)', borderRadius: 4, background: 'var(--color-bg)', color: 'var(--color-text)' };
 
 export function IndexEditor({ indexes, availableColumns, onChange }: Props) {
-  const patch = (i: number, d: Partial<DesignIndex>): void =>
+  const patch = (i: number, d: Partial<DesignIndex>) =>
     onChange(indexes.map((ix, k) => (k === i ? { ...ix, ...d } : ix)));
-  const remove = (i: number): void => onChange(indexes.filter((_, k) => k !== i));
-  const add = (): void => onChange([...indexes, { name: `IX_${indexes.length + 1}`, isUnique: false, columns: availableColumns.slice(0, 1) }]);
-  const toggleCol = (i: number, col: string): void => {
+  const remove = (i: number) => onChange(indexes.filter((_, k) => k !== i));
+  const add = () => onChange([...indexes, { name: `IX_${indexes.length + 1}`, isUnique: false, columns: availableColumns.slice(0, 1) }]);
+  const toggleCol = (i: number, col: string) => {
     const cols = indexes[i]?.columns ?? [];
     patch(i, { columns: cols.includes(col) ? cols.filter((c) => c !== col) : [...cols, col] });
   };
