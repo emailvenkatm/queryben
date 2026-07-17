@@ -1,4 +1,7 @@
-// Use-case orchestrators. Ported per feature.
+// Use-case orchestrators. Thin glue between the IPC surface and the adapters.
 
-// Extraction from ipc/ god files is a follow-up refactor; keeping placeholders
-// so the module tree compiles cleanly.
+pub mod execute_query;
+pub mod execute_transaction;
+pub mod introspect;
+pub mod row_convert;
+pub mod session;
