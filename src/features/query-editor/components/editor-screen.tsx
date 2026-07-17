@@ -119,7 +119,7 @@ export function EditorScreen() {
     void execute({ connectionId: activeConnectionId, sql: activeTab.sql, tabId: activeTabId });
   }, [activeConnectionId, activeTabId, activeTab, execute, qc]);
 
-  const handleRefetchAfterCommit = useCallback((committedCount: number) => {
+  const onCommitted = useCallback((committedCount: number) => {
     refetchBrowse();
     const label = committedCount === 1 ? '1 change committed' : `${committedCount} changes committed`;
     setFirewallToast(null);
@@ -266,7 +266,7 @@ export function EditorScreen() {
         </div>
 
         {activeTab.browseTable && activeConnectionId && (
-          <PendingChangesTray tabId={activeTab.id} connectionId={activeConnectionId} onCommitted={handleRefetchAfterCommit} />
+          <PendingChangesTray tabId={activeTab.id} connectionId={activeConnectionId} onCommitted={onCommitted} />
         )}
 
         <FirewallToast message={firewallToast} />

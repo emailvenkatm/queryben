@@ -135,7 +135,7 @@ export function BrowseGrid({
     setInsertRows((rows) => [...rows, { rowId: `new-${crypto.randomUUID()}`, values: {} }]);
   }, [isEditable, metadata]);
 
-  const handleInsertCommitWithState = useCallback(
+  const commitInsert = useCallback(
     (rowId: string, columnName: string, next: typeof NULL_SENTINEL | string) => {
       handleInsertCellCommit(rowId, columnName, next);
       setInsertRows((rows) =>
@@ -264,7 +264,7 @@ export function BrowseGrid({
                             sqlType={metaCol?.sqlType ?? ''}
                             isNullable={metaCol?.isNullable ?? col.nullable}
                             columnName={col.name}
-                            onCommit={(v) => handleInsertCommitWithState(ins.rowId, col.name, v)}
+                            onCommit={(v) => commitInsert(ins.rowId, col.name, v)}
                           />
                         )}
                       </td>
