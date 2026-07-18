@@ -136,8 +136,8 @@ pub async fn get_query_plan(
     let input = reopen_input(&state, snapshot).await?;
     let mut client = mssql::connect_for_connection(&input, connection_id).await?;
 
-    // Only SQL Server dispatch is wired today. MySQL / Postgres providers exist
-    // as scaffolds; the match here is where they slot in once their drivers land.
+    // v1 = SQL Server only. MySQL / Postgres providers exist as unimplemented
+    // impls; the match here is where they slot in once their drivers land.
     let provider: Box<dyn QueryPlanProvider> = Box::new(SqlServerQueryPlanProvider);
     let plan = provider.capture_plan(&mut client, &sql, &opts).await?;
 

@@ -5,8 +5,8 @@
 //! and emits a review-ready DDL script. Apply runs those statements in a
 //! transaction — see `commands::table_designer::apply_table_ddl`.
 //!
-//! For v1 only `SqlServerTableDesignerProvider` is real. MySql / Postgres stubs
-//! ship so the future dispatch on connection engine is a one-line swap.
+//! v1 ships with `SqlServerTableDesignerProvider` only. MySql / Postgres
+//! implementations of the trait land alongside their engine drivers.
 
 mod ddl;
 mod load;
@@ -98,7 +98,8 @@ impl TableDesignerProvider for SqlServerTableDesignerProvider {
     }
 }
 
-// ---- stubs for future engines --------------------------------------------
+// ---- unimplemented engines -------------------------------------------------
+// Placeholder impls so the trait registry compiles ahead of the real drivers.
 
 pub struct MysqlTableDesignerProvider;
 

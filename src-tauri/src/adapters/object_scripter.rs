@@ -215,7 +215,7 @@ impl ObjectScripter for SqlServerObjectScripter {
             ObjectKind::Table => {
                 // No fully-general "ALTER TABLE that preserves everything"
                 // exists in SQL Server. Emit an ALTER template with the target
-                // table already scaffolded so the user drops in ADD/DROP/ALTER
+                // table already filled in so the user drops in ADD/DROP/ALTER
                 // COLUMN clauses.
                 let q = self.options.qualified(&obj.schema, &obj.name);
                 Ok(format!(
@@ -224,8 +224,8 @@ impl ObjectScripter for SqlServerObjectScripter {
             }
             ObjectKind::Index => {
                 // ALTER INDEX in SQL Server only rebuilds/reorganizes — the
-                // column list is fixed. Emit the reorganize scaffold; users
-                // wanting a structural change do DROP + CREATE.
+                // column list is fixed. Emit the REBUILD form; users wanting
+                // a structural change do DROP + CREATE.
                 let table = obj.table.as_deref().ok_or_else(|| {
                     AppError::internal(
                         "index script requires parent table in SchemaObjectRef.table",

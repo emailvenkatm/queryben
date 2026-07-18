@@ -1,5 +1,5 @@
 //! Per-engine query-plan capture. Only SQL Server is wired; MySQL and Postgres
-//! keep empty scaffolds so the trait registry lands ready for later drivers.
+//! keep unimplemented impls so the trait registry stays whole.
 
 use async_trait::async_trait;
 use futures_util::TryStreamExt;
@@ -424,9 +424,9 @@ fn classify_op(physical: &str) -> OpKind {
     }
 }
 
-// ---- MySQL / Postgres scaffolds --------------------------------------------
-// Intentionally unimplemented — the trait dispatch is already proven above.
-// Wire real captures when we ship those drivers.
+// ---- MySQL / Postgres ------------------------------------------------------
+// Intentionally unimplemented — the trait matches on connection engine, and
+// these slots fill in when the drivers land.
 
 pub struct MySqlQueryPlanProvider;
 

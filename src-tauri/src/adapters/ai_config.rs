@@ -1,7 +1,8 @@
 //! AI assistant configuration. Read from
 //! `<app_data_dir>/ai.config.json`; missing / malformed => baked-in defaults
-//! that point at a local RAG backend on 8080. Users get a working stub without
-//! touching disk, and can override provider + credentials without a rebuild.
+//! that point at a local RAG backend on 8080. First-run users get a working
+//! config without touching disk, and can override provider + credentials
+//! without a rebuild.
 
 use std::path::Path;
 

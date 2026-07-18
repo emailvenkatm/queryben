@@ -1,7 +1,7 @@
 //! Pluggable AI provider trait. `RagBackendProvider` talks to the user's own
-//! `/newchat` + `/completions` stack; `OpenAiProvider` is a stub that proves
-//! the trait shape and is easy to wire against the OpenAI Chat Completions
-//! API later.
+//! `/newchat` + `/completions` stack. `OpenAiProvider` is intentionally
+//! unimplemented for v1 — the trait shape is what matters, and the OpenAI
+//! Chat Completions call is a small addition once we need it.
 
 use async_trait::async_trait;
 
@@ -60,7 +60,7 @@ impl AiProvider for OpenAiProvider {
     async fn new_session(&self, _context: SessionContext) -> Result<String, AppError> {
         // OpenAI has no server-side session, so a real impl will synthesize a
         // uuid here and cache the system prompt in a local HashMap keyed by
-        // that id. Left as a stub to keep v1 focused.
+        // that id. Deferred — v1 targets the RAG backend only.
         todo!("OpenAiProvider::new_session — stash system prompt under a fresh uuid")
     }
 
