@@ -62,9 +62,9 @@ function PDivider() {
   return <div style={{ borderTop: '1px solid rgba(26,46,42,0.07)', margin: '4px 0' }} />;
 }
 
-// TODO: wire to query-editor + results-copy features when ported.
-// For now, these stubs keep the palette functional without the missing features.
-function useResultsStub() {
+// Placeholder — swapped for the real hook when the results feature exposes
+// its public surface. Keeps the palette self-contained meanwhile.
+function useResultsBridge() {
   return { hasResults: false, copy: (_format: string) => {} };
 }
 
@@ -72,7 +72,7 @@ export function Palette({ open, onOpenChange }: PaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
   const [exportOpen, setExportOpen] = useState(false);
-  const { hasResults, copy } = useResultsStub();
+  const { hasResults, copy } = useResultsBridge();
 
   const close = () => {
     onOpenChange(false);

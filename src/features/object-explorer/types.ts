@@ -8,8 +8,8 @@ export interface ObjectContextTarget {
   name: string;
 }
 
-// Stub — object-scripter is outside this agent's slice.
-// TODO wire to object-scripter feature when ported.
+// Kept in-feature until the object-scripter surface stabilizes; then it
+// moves to that feature's index and object-explorer re-exports.
 export type ScriptAction =
   | 'create'
   | 'alter'

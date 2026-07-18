@@ -32,7 +32,7 @@ adapters/           IO. keychain, sqlite, mssql, azure oauth, filesystem.
     accounts.rs     account cache on disk
   ...
 
-app/                use-cases. thin orchestrators that pull adapters together.
+app/                use-cases. thin glue that pulls adapters together.
   sign_in.rs
   execute_query.rs
   import_from_ads.rs
@@ -44,7 +44,7 @@ ipc/                #[tauri::command] wrappers. dumb. only marshal + delegate.
   ...
 ```
 
-Why the split: keeps `#[tauri::command]` functions boring and testable-free, while the interesting logic (retry, cache, error mapping) lives in `app/` where it's callable from tests without Tauri.
+Why the split: `#[tauri::command]` functions stay boring, and the interesting logic (retry, cache, error mapping) lives in `app/` where it's callable from tests without Tauri.
 
 ### Frontend (`src/`)
 
@@ -110,7 +110,7 @@ Applies to `AccountId`, `NotebookId`, `QueryId`. UI can treat them as strings; R
 
 ## Testing
 
-- Rust: unit tests colocated (`#[cfg(test)] mod tests` at bottom of file). Integration tests in `src-tauri/tests/` covering `app/` orchestrators against fixtures.
+- Rust: unit tests colocated (`#[cfg(test)] mod tests` at bottom of file). Integration tests in `src-tauri/tests/` run `app/` use-cases against fixtures.
 - TS: Vitest. Test the hooks, not the components. Test the API layer against a mocked Tauri IPC.
 - **Real-DB smoke**: `scripts/smoke-real.sh` runs a subset of integration tests against `dbclient-testdb.database.windows.net` — must pass before shipping.
 

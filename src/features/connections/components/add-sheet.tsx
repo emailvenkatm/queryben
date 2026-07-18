@@ -9,7 +9,8 @@ interface AddSheetProps {
 
 type Mode = 'azure' | 'manual';
 
-// TODO extract to shared/ui once available
+// Local overlay — kept here until a second caller shows up and we lift it
+// into shared/ui with a proper API.
 interface OverlaySheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

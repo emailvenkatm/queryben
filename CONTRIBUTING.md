@@ -22,7 +22,7 @@ to exercise Azure sign-in; the app still boots without them.
   primitives under `src/shared/`. Never import another feature's internals
   — go through its `index.ts`.
 - `src-tauri/src/` — Rust backend. `core/` is pure types, `adapters/` is
-  IO, `app/` is orchestration, `ipc/` is the thin `#[tauri::command]`
+  IO, `app/` holds the use-cases, `ipc/` is the thin `#[tauri::command]`
   surface. Full breakdown in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Sending a PR
