@@ -1,7 +1,9 @@
 # Contributing
 
 Thanks for looking. QueryBen is small enough that a good PR usually lands
-same-week.
+same-week. Maintained by Venkata Maguluri (backend, adapters, Tauri) and
+Swapna Kommuri (UI, docs, onboarding) — ping whoever's lane your change
+lives in.
 
 ## Run it locally
 
