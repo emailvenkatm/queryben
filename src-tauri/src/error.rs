@@ -39,6 +39,7 @@ pub enum AppError {
     // parses out of the tiberius token stream; `server` is the target FQDN;
     // `connection_id` lets the frontend pin the auto-fix dialog to the row.
     #[error("firewall blocked: {ip} not on {server} allowlist")]
+    #[serde(rename_all = "camelCase")]
     FirewallBlocked {
         ip: String,
         server: String,
