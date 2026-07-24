@@ -20,7 +20,6 @@ const NAV_ITEMS = [
   { path: '/queries', label: 'Saved queries', Icon: IconQueries },
   { path: '/history', label: 'Query history', Icon: IconHistory },
   { path: '/notebook', label: 'Notebooks', Icon: IconNotebook },
-  { path: '/schema-compare', label: 'Schema Compare', Icon: IconDiff },
 ] as const;
 
 function NavLink({
