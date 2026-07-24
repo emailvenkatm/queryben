@@ -2,10 +2,8 @@ import { useThemeStore } from '@/shared/stores/theme';
 import { PRESETS } from '@/shared/theme/presets';
 
 export function PaletteCustomizer() {
-  const { paletteId, setPreset } = useThemeStore((s) => ({
-    paletteId: s.paletteId,
-    setPreset: s.setPreset,
-  }));
+  const paletteId = useThemeStore((s) => s.paletteId);
+  const setPreset = useThemeStore((s) => s.setPreset);
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
