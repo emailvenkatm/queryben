@@ -94,6 +94,13 @@ jobs:
       - name: run tsc
         run: pnpm tsc --noEmit
 
+      # tauri::generate_context! embeds the frontend dist folder into the Rust
+      # binary at compile time, so cargo check fails if ../dist doesn't exist.
+      # Locally the beforeBuildCommand in tauri.conf.json runs vite build first;
+      # cargo check in CI has no such hook, so build the frontend explicitly.
+      - name: build frontend
+        run: pnpm build
+
       - name: cargo check
         run: cargo check --manifest-path src-tauri/Cargo.toml --target ${{ matrix.rust-target }}
 
