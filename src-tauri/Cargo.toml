@@ -65,17 +65,6 @@ tiny_http = "0.12"
 keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service"] }
 url = "2"
 
-# macOS-only: direct Security.framework binding so we can pin
-# kSecAttrAccessGroup = "H4RK9DC4UP.com.queryben" on every keychain item.
-# That access-group ACL is what makes "Always Allow" prompts stop appearing
-# across rebuilds and app updates — the `keyring` crate uses the default
-# access group, which binds to the exact code-signature hash and re-prompts.
-[target.'cfg(target_os = "macos")'.dependencies]
-security-framework = "3"
-security-framework-sys = "2"
-core-foundation = "0.10"
-core-foundation-sys = "0.8"
-
 # Serialization / errors / IDs / time
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -120,6 +109,21 @@ dirs = "5"
 # (macOS ships an ancient one; stock Windows has none). Both features share
 # `queries.db` sitting next to `connections.json` in the app-data dir.
 rusqlite = { version = "0.32", features = ["bundled", "chrono"] }
+
+# macOS-only: direct Security.framework binding so we can pin
+# kSecAttrAccessGroup = "H4RK9DC4UP.com.queryben" on every keychain item.
+# That access-group ACL is what makes "Always Allow" prompts stop appearing
+# across rebuilds and app updates — the `keyring` crate uses the default
+# access group, which binds to the exact code-signature hash and re-prompts.
+# MUST stay near the bottom: any [dependencies]-style key after a
+# [target.'cfg(...)'.dependencies] header belongs to that header, so if this
+# block moves up all subsequent deps become macOS-only and Windows/Linux
+# builds hard-fail with "cannot find crate serde_json".
+[target.'cfg(target_os = "macos")'.dependencies]
+security-framework = "3"
+security-framework-sys = "2"
+core-foundation = "0.10"
+core-foundation-sys = "0.8"
 
 [dev-dependencies]
 # Integration tests for token_file_cache write to per-test temp dirs; we point
