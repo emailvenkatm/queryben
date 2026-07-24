@@ -81,6 +81,7 @@ export function BrowseGrid({
 }: BrowseGridProps) {
   const [metadata, setMetadata] = useState<TableMetadata | null>(null);
   const [metadataError, setMetadataError] = useState<string | null>(null);
+  const [metadataReloadKey, setMetadataReloadKey] = useState(0);
   const [editing, setEditing] = useState<{ rowId: string; columnName: string } | null>(null);
   const [insertRows, setInsertRows] = useState<InsertRow[]>([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
@@ -91,11 +92,26 @@ export function BrowseGrid({
 
   useEffect(() => {
     let cancelled = false;
-    invoke<TableMetadata>('get_table_metadata', { connectionId, schema: browseTable.schema, table: browseTable.name })
+    setMetadataError(null);
+    invoke<TableMetadata>('get_table_metadata', { connectionId, schema: browseTable.schema, name: browseTable.name })
       .then((m) => { if (!cancelled) setMetadata(m); })
-      .catch((err: unknown) => { if (!cancelled) setMetadataError(err instanceof Error ? err.message : String(err)); });
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        const msg = err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+            ? String((err as { message: unknown }).message)
+            : String(err);
+        setMetadataError(msg);
+      });
     return () => { cancelled = true; };
-  }, [connectionId, browseTable.schema, browseTable.name]);
+  }, [connectionId, browseTable.schema, browseTable.name, metadataReloadKey]);
+
+  const reloadMetadata = useCallback(() => {
+    setMetadata(null);
+    setMetadataError(null);
+    setMetadataReloadKey((k) => k + 1);
+  }, []);
 
   // Clear insert rows when all pending changes are cleared externally.
   const prevChangeCount = useRef(changes.length);
@@ -173,13 +189,22 @@ export function BrowseGrid({
         onAddRow={handleAddRow}
         metadataError={metadataError}
         isLoading={isLoading}
-        onRefresh={onRefresh}
+        onRefresh={() => { reloadMetadata(); onRefresh?.(); }}
       />
 
       <div className="flex-1 overflow-auto">
         {displayColumns.length === 0 ? (
-          <div style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'Geist, sans-serif' }}>
-            {metadataError ?? 'Loading table…'}
+          <div style={{ padding: 40, textAlign: 'center', fontSize: 12, color: metadataError ? 'var(--color-error)' : 'var(--color-text-muted)', fontFamily: 'Geist, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <div>{metadataError ?? 'Loading table…'}</div>
+            {metadataError && (
+              <button
+                type="button"
+                onClick={() => { reloadMetadata(); onRefresh?.(); }}
+                style={{ padding: '6px 14px', fontSize: 12, fontFamily: 'Geist, sans-serif', color: 'var(--color-text)', background: 'var(--color-bg-elevated)', border: '1px solid rgba(26,46,42,0.14)', borderRadius: 6, cursor: 'pointer' }}
+              >
+                Retry
+              </button>
+            )}
           </div>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 600 }} aria-label="Table browse">

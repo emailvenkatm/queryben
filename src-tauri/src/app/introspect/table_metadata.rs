@@ -1,6 +1,8 @@
 //! Per-table drill-in: column list + primary key. Editable when at least
 //! one PK column exists.
 
+use std::time::Duration;
+
 use tiberius::Query;
 
 use crate::adapters::mssql;
@@ -12,6 +14,12 @@ use crate::state::AppState;
 use super::rows::{row_get_i32, row_get_string};
 use super::sql::{format_sql_type, COLUMNS_SQL, PK_SQL};
 use crate::app::session::reopen_input;
+
+// Idle Azure SQL connections + WiFi flips leave tiberius' TCP socket stuck.
+// Without a hard cap, `get_table_metadata` sits on `.await` forever and the
+// UI shows "Loading table…" with no way out. 15s covers cold Azure SQL page
+// reads but still fails fast on a dead socket.
+const METADATA_TIMEOUT_SECS: u64 = 15;
 
 pub async fn get_table_metadata(
     state: &AppState,
@@ -30,10 +38,47 @@ pub async fn get_table_metadata(
 
     let snapshot = state.registry.snapshot(uuid)?;
     let input = reopen_input(state, snapshot).await?;
-    let mut client = mssql::connect_for_connection(&input, uuid).await?;
+    let mut client = match tokio::time::timeout(
+        Duration::from_secs(METADATA_TIMEOUT_SECS),
+        mssql::connect_for_connection(&input, uuid),
+    )
+    .await
+    {
+        Ok(res) => res?,
+        Err(_) => {
+            tracing::error!(target: "queryben::get-table-metadata", %uuid, "connect timed out");
+            return Err(AppError::Timeout(format!(
+                "connect exceeded {METADATA_TIMEOUT_SECS}s; the connection may be stale"
+            )));
+        }
+    };
 
-    let columns = load_columns(&mut client, &schema, &name).await?;
-    let primary_key = load_primary_key(&mut client, &schema, &name).await?;
+    let columns = match tokio::time::timeout(
+        Duration::from_secs(METADATA_TIMEOUT_SECS),
+        load_columns(&mut client, &schema, &name),
+    )
+    .await
+    {
+        Ok(res) => res?,
+        Err(_) => {
+            return Err(AppError::Timeout(format!(
+                "loading columns exceeded {METADATA_TIMEOUT_SECS}s"
+            )))
+        }
+    };
+    let primary_key = match tokio::time::timeout(
+        Duration::from_secs(METADATA_TIMEOUT_SECS),
+        load_primary_key(&mut client, &schema, &name),
+    )
+    .await
+    {
+        Ok(res) => res?,
+        Err(_) => {
+            return Err(AppError::Timeout(format!(
+                "loading primary key exceeded {METADATA_TIMEOUT_SECS}s"
+            )))
+        }
+    };
 
     state.registry.mark_used(uuid).ok();
 
