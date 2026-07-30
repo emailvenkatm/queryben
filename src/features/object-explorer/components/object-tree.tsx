@@ -22,7 +22,7 @@ import { AZURE_ACCOUNT_KEY } from '@/features/azure-auth/index';
 export function ObjectTree() {
   const [filter, setFilter] = useState('');
   const activeConnectionId = useActiveConnectionStore((s) => s.activeConnectionId);
-  const { data: schema, isLoading, error, refetch } = useSchemaTree(activeConnectionId);
+  const { data: schema, isLoading, isFetching, error, refetch } = useSchemaTree(activeConnectionId);
 
   const [firewallDismissed, setFirewallDismissed] = useState(false);
   const [firewallToast, setFirewallToast] = useState<string | null>(null);
@@ -172,15 +172,50 @@ export function ObjectTree() {
             <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(244,239,231,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
               Explorer
             </span>
-            <button
-              type="button"
-              aria-label="Add new query"
-              style={{ background: 'none', border: 'none', color: 'rgba(244,239,231,0.4)', cursor: 'pointer', padding: 2 }}
-            >
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                <path d="M6.5 1.5v10M1.5 6.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <button
+                type="button"
+                aria-label="Refresh schema"
+                title="Refresh schema"
+                onClick={() => { void refetch(); }}
+                disabled={!activeConnectionId || isFetching}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(244,239,231,0.4)',
+                  cursor: !activeConnectionId || isFetching ? 'default' : 'pointer',
+                  padding: 2,
+                  opacity: !activeConnectionId ? 0.4 : 1,
+                  display: 'inline-flex',
+                }}
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 13 13"
+                  fill="none"
+                  aria-hidden="true"
+                  style={{ animation: isFetching ? 'qb-spin 0.8s linear infinite' : undefined }}
+                >
+                  <path
+                    d="M11 6.5a4.5 4.5 0 1 1-1.317-3.183M11 1.5v2.5H8.5"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                aria-label="Add new query"
+                style={{ background: 'none', border: 'none', color: 'rgba(244,239,231,0.4)', cursor: 'pointer', padding: 2 }}
+              >
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M6.5 1.5v10M1.5 6.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(244,239,231,0.07)', border: '1px solid rgba(244,239,231,0.10)', borderRadius: 7, padding: '6px 10px' }}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
