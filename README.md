@@ -6,10 +6,6 @@ that Microsoft has retired it (Feb 2026).
 
 Tauri 2 shell, tiberius on the Rust side, React 19 on the front.
 
-Built by [@venkatamaguluri](https://github.com/emailvenkatm) and
-[@swapnakommuri](https://github.com/swapnak152). Backend and adapters on one
-side, UI and docs on the other.
-
 <!-- Add a screenshot here once the UI settles. Drop a PNG in docs/ and
      replace this comment with: ![QueryBen](docs/screenshot.png) -->
 
