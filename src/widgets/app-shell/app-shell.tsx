@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useHotkey } from '@/shared/hooks/use-hotkey';
 import { useActiveConnectionStore } from '@/shared/stores/active-connection';
-import { TitleBar } from './title-bar';
 import { Sidebar } from './sidebar';
 
 interface AppShellProps {
@@ -23,8 +22,6 @@ export function AppShell({ commandPalette, objectTree, accountAvatar }: AppShell
 
   return (
     <div className="flex h-screen flex-col overflow-hidden" style={{ background: 'var(--color-bg)' }}>
-      <TitleBar />
-
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           onOpenCommandPalette={() => setPaletteOpen(true)}
