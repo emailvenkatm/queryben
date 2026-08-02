@@ -138,6 +138,13 @@ export interface TableColumn {
   isNullable: boolean;
   isIdentity: boolean;
   isComputed: boolean;
+  // rowversion / timestamp: server maintains it on every write, so any
+  // client-supplied value gets rejected the same way IDENTITY does.
+  isRowversion: boolean;
+  // Rolled up from the flags above so the browse grid can gate cell edits on
+  // a single boolean. Keeps the raw flags around so the tooltip can name the
+  // exact reason a cell is read-only.
+  isEditable: boolean;
   defaultExpression: string | null;
   ordinal: number;
 }

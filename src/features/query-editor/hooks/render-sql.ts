@@ -24,7 +24,9 @@ interface InsertArgs {
 export function renderInsert({ metadata, rowValues }: InsertArgs): string {
   const target = qualifiedName(metadata.schema, metadata.name);
   const cols = metadata.columns.filter((c) => {
-    if (c.isIdentity || c.isComputed) return false;
+    // isEditable rolls up IDENTITY / computed / rowversion. Doing the check
+    // here means new column kinds only need to land in one place server-side.
+    if (!c.isEditable) return false;
     if (!Object.prototype.hasOwnProperty.call(rowValues, c.name) && c.isNullable) return false;
     return true;
   });

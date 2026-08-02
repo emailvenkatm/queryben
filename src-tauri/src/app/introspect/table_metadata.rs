@@ -129,12 +129,17 @@ async fn load_columns(
         // fails (shouldn't for a real table, but stay defensive).
         let is_identity = row.try_get::<i32, _>(6).map_err(AppError::from)?.unwrap_or(0) != 0;
         let is_computed = row.try_get::<i32, _>(7).map_err(AppError::from)?.unwrap_or(0) != 0;
+        let is_rowversion = row.try_get::<i32, _>(8).map_err(AppError::from)?.unwrap_or(0) != 0;
         let default_expression = row
-            .try_get::<&str, _>(8)
+            .try_get::<&str, _>(9)
             .map_err(AppError::from)?
             .map(|s| s.to_string())
             .filter(|s| !s.is_empty());
-        let ordinal = row_get_i32(&row, 9)?.max(0) as u32;
+        let ordinal = row_get_i32(&row, 10)?.max(0) as u32;
+        // Server-maintained columns can't accept a client-supplied value.
+        // Rolling the derivation up here means the browse grid can gate the
+        // edit path on a single boolean instead of duplicating the OR chain.
+        let is_editable = !(is_identity || is_computed || is_rowversion);
 
         out.push(TableColumn {
             name: col_name,
@@ -142,6 +147,8 @@ async fn load_columns(
             is_nullable,
             is_identity,
             is_computed,
+            is_rowversion,
+            is_editable,
             default_expression,
             ordinal,
         });

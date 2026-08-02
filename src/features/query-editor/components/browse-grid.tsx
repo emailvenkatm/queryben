@@ -241,16 +241,29 @@ export function BrowseGrid({
                       const displayValue = pendingValue !== undefined ? pendingValue : rawValue;
                       const hasPending = cellUpdates.has(`${rowId}::${col.name}`);
                       const isEditingThisCell = editing?.rowId === rowId && editing?.columnName === col.name;
+                      const metaCol = metadata?.columns.find((c) => c.name === col.name);
+                      // A column is only writable if the table itself is editable AND the
+                      // column isn't server-maintained. Missing metadata means we haven't
+                      // proved it's editable yet, so keep the cell locked.
+                      const columnEditable = isEditable && (metaCol?.isEditable ?? false);
+                      const readOnlyReason = metaCol?.isIdentity
+                        ? 'Read-only: identity column'
+                        : metaCol?.isComputed
+                          ? 'Read-only: computed column'
+                          : metaCol?.isRowversion
+                            ? 'Read-only: rowversion column'
+                            : null;
                       return (
                         <td
                           key={col.name}
-                          onDoubleClick={() => { if (!isEditable || isDeleted) return; setEditing({ rowId, columnName: col.name }); }}
-                          style={{ padding: 0, borderBottom: '1px solid rgba(26,46,42,0.045)', borderRight: '1px solid rgba(26,46,42,0.04)', whiteSpace: 'nowrap', fontFamily: 'Geist Mono, monospace', fontSize: 12, color: 'var(--color-text)', verticalAlign: 'middle', maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', background: hasPending && !isDeleted ? 'rgba(213,138,74,0.18)' : undefined, cursor: isEditable && !isDeleted ? 'text' : 'default' }}
+                          onDoubleClick={() => { if (!columnEditable || isDeleted) return; setEditing({ rowId, columnName: col.name }); }}
+                          title={readOnlyReason ?? undefined}
+                          style={{ padding: 0, borderBottom: '1px solid rgba(26,46,42,0.045)', borderRight: '1px solid rgba(26,46,42,0.04)', whiteSpace: 'nowrap', fontFamily: 'Geist Mono, monospace', fontSize: 12, color: readOnlyReason && !isDeleted ? 'rgba(26,46,42,0.55)' : 'var(--color-text)', verticalAlign: 'middle', maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', background: hasPending && !isDeleted ? 'rgba(213,138,74,0.18)' : readOnlyReason && !isDeleted ? 'rgba(26,46,42,0.035)' : undefined, cursor: columnEditable && !isDeleted ? 'text' : 'default' }}
                         >
                           {isEditingThisCell ? (
                             <CellEditor
                               initial={displayValue}
-                              sqlType={metadata?.columns.find((c) => c.name === col.name)?.sqlType ?? ''}
+                              sqlType={metaCol?.sqlType ?? ''}
                               isNullable={col.nullable}
                               onCommit={(v) => { handleCommitEdit(rowIdx, col.name, v); setEditing(null); }}
                               onCancel={() => setEditing(null)}
@@ -272,11 +285,21 @@ export function BrowseGrid({
                   <td style={{ width: 44, textAlign: 'right', paddingRight: 10, fontSize: 11, color: 'var(--color-primary-hover)', fontFamily: 'Geist Mono, monospace', borderBottom: '1px solid rgba(26,46,42,0.045)', borderRight: '1px solid rgba(26,46,42,0.07)', background: 'rgba(42,87,81,0.20)', fontWeight: 600 }}>+</td>
                   {displayColumns.map((col) => {
                     const metaCol = metadata?.columns.find((c) => c.name === col.name);
-                    const isAutoCol = metaCol?.isIdentity === true || metaCol?.isComputed === true;
+                    // `isEditable === false` also covers rowversion, not just IDENTITY /
+                    // computed. Falling back to true when metadata hasn't loaded yet keeps
+                    // the input rendered instead of silently blanking the cell.
+                    const isAutoCol = metaCol ? !metaCol.isEditable : false;
+                    const autoReason = metaCol?.isIdentity
+                      ? 'Auto-generated (IDENTITY column)'
+                      : metaCol?.isComputed
+                        ? 'Auto-generated (computed column)'
+                        : metaCol?.isRowversion
+                          ? 'Auto-generated (rowversion column)'
+                          : 'Auto-generated';
                     return (
                       <td key={col.name} style={{ padding: 0, borderBottom: '1px solid rgba(26,46,42,0.045)', borderRight: '1px solid rgba(26,46,42,0.04)', whiteSpace: 'nowrap', fontFamily: 'Geist Mono, monospace', fontSize: 12, background: isAutoCol ? 'repeating-linear-gradient(45deg, rgba(26,46,42,0.03), rgba(26,46,42,0.03) 4px, rgba(26,46,42,0.06) 4px, rgba(26,46,42,0.06) 8px)' : '#fff' }}>
                         {isAutoCol ? (
-                          <div style={{ padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(26,46,42,0.4)' }} title="Auto-generated (IDENTITY or computed column)">
+                          <div style={{ padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(26,46,42,0.4)' }} title={autoReason}>
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                               <rect x="2" y="5" width="6" height="4" rx="0.5" stroke="currentColor" strokeWidth="1" />
                               <path d="M3.5 5V3.5a1.5 1.5 0 013 0V5" stroke="currentColor" strokeWidth="1" />

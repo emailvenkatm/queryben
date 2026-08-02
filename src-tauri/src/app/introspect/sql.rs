@@ -76,7 +76,9 @@ pub(super) const STATS_SQL_ONE: &str = "SELECT SCHEMA_NAME(t.schema_id) AS schem
 
 // Column list for a single table. Combines INFORMATION_SCHEMA.COLUMNS (portable
 // bits) with COLUMNPROPERTY / sys.computed_columns for the IDENTITY / computed
-// flags that INFORMATION_SCHEMA doesn't expose.
+// flags that INFORMATION_SCHEMA doesn't expose. `is_rowversion` matches both
+// the modern `rowversion` alias and the legacy `timestamp` synonym; either one
+// is server-maintained and can't be written from a client statement.
 pub(super) const COLUMNS_SQL: &str = "SELECT c.COLUMN_NAME,
        c.DATA_TYPE,
        c.CHARACTER_MAXIMUM_LENGTH,
@@ -87,6 +89,7 @@ pub(super) const COLUMNS_SQL: &str = "SELECT c.COLUMN_NAME,
                       c.COLUMN_NAME, 'IsIdentity') AS is_identity,
        COLUMNPROPERTY(OBJECT_ID(QUOTENAME(c.TABLE_SCHEMA) + '.' + QUOTENAME(c.TABLE_NAME)),
                       c.COLUMN_NAME, 'IsComputed') AS is_computed,
+       CASE WHEN LOWER(c.DATA_TYPE) IN ('timestamp', 'rowversion') THEN 1 ELSE 0 END AS is_rowversion,
        c.COLUMN_DEFAULT,
        c.ORDINAL_POSITION
   FROM INFORMATION_SCHEMA.COLUMNS AS c

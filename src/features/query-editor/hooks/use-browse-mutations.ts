@@ -88,13 +88,18 @@ export function useBrowseMutations({
   const handleCommitEdit = useCallback(
     (rowIdx: number, columnName: string, next: EditingValue): void => {
       if (!metadata || !isEditable) return;
+      // Server-maintained columns (IDENTITY, computed, rowversion) can't accept
+      // a UPDATE. The browse grid already blocks the double-click, but a stray
+      // keyboard path or a future refactor shouldn't be able to slip one past.
+      const column = metadata.columns.find((c) => c.name === columnName);
+      if (!column || !column.isEditable) return;
       const rowId = rowIdForIdx(rowIdx);
       const rowValues = rowValuesForIdx(rowIdx);
       const oldValue = rowValues[columnName];
       const newValue =
         next === NULL_SENTINEL
           ? null
-          : coerceForColumn(String(next), metadata.columns.find((c) => c.name === columnName));
+          : coerceForColumn(String(next), column);
       if (oldValue === newValue) return;
       const pkValues = buildPkValues(rowValues);
       if (!pkValues) return;
