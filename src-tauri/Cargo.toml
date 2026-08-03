@@ -1,6 +1,6 @@
 [package]
 name = "queryben"
-version = "0.1.2"
+version = "0.1.3"
 description = "Modern SQL client for MSSQL / Azure SQL / SQL DW"
 authors = ["QueryBen"]
 edition = "2021"
