@@ -22,19 +22,28 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 if [[ "$(uname)" == "Darwin" ]] && [ -z "${APPLE_SIGNING_IDENTITY:-}" ]; then
-  # Same resolution as dev-sign.sh: first Developer ID Application cert.
-  # Tauri's bundler picks this up when calling codesign.
-  IDENTITY_LINE="$(security find-identity -v -p codesigning 2>/dev/null \
-    | grep 'Developer ID Application' \
-    | head -1 || true)"
+  # Prefer Venkata's personal Developer ID (QueryBen team 867PDSG8CJ). Fall
+  # back to any Developer ID Application identity so contributors with their
+  # own certs still get a signed build. Mirrors scripts/dev-sign.sh — without
+  # this preference, `security find-identity` sorts Injoya LLC first and
+  # QueryBen ends up cross-signed under the wrong team.
+  PREFERRED="Developer ID Application: Venkata Maguluri (867PDSG8CJ)"
+  IDENTITY_NAME=""
 
-  if [ -n "$IDENTITY_LINE" ]; then
-    # Common Name is the quoted field on the line.
-    IDENTITY_NAME="$(printf '%s\n' "$IDENTITY_LINE" | sed -n 's/.*"\(.*\)"/\1/p')"
+  if security find-identity -v -p codesigning 2>/dev/null | grep -q "$PREFERRED"; then
+    IDENTITY_NAME="$PREFERRED"
+  else
+    IDENTITY_NAME="$(security find-identity -v -p codesigning 2>/dev/null \
+      | grep 'Developer ID Application' \
+      | head -1 \
+      | sed -n 's/.*"\(.*\)"/\1/p' || true)"
+  fi
+
+  if [ -n "$IDENTITY_NAME" ]; then
     export APPLE_SIGNING_IDENTITY="$IDENTITY_NAME"
     echo "build-release: using $APPLE_SIGNING_IDENTITY"
   else
-    echo "build-release: no Developer ID Application cert found — build will be unsigned" >&2
+    echo "build-release: no Developer ID Application cert found, build will be unsigned" >&2
   fi
 fi
 
