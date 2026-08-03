@@ -1,4 +1,4 @@
-import { useUiPrefs } from '../hooks/use-ui-prefs';
+import { useUiPrefsStore } from '@/shared/stores/ui-prefs';
 import { GeneralPrefs } from './general-prefs';
 import { PaletteCustomizer } from './palette-customizer';
 
@@ -15,7 +15,8 @@ function Section({ id, title, desc, children }: { id: string; title: string; des
 }
 
 export function SettingsScreen() {
-  const { prefs, update } = useUiPrefs();
+  const prefs = useUiPrefsStore((s) => s.prefs);
+  const update = useUiPrefsStore((s) => s.updatePrefs);
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', background: 'var(--color-bg)' }}>

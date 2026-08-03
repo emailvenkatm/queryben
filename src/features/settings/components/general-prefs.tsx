@@ -1,4 +1,4 @@
-import type { UiPrefs } from '../types';
+import type { UiPrefs } from '@/shared/types';
 
 interface Props {
   prefs: UiPrefs;
@@ -66,39 +66,8 @@ export function GeneralPrefs({ prefs, update }: Props) {
       <Row
         label="Word wrap"
         hint="Wrap long lines instead of scrolling sideways"
-        control={<Toggle checked={prefs.editorWordWrap} onChange={(v) => update({ editorWordWrap: v })} />}
-      />
-      <Row
-        label="Connection timeout"
-        control={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="number" min={5} max={300} value={prefs.connectionTimeoutSec}
-              onChange={(e) => update({ connectionTimeoutSec: Number(e.target.value) })}
-              style={{ padding: '6px 10px', fontSize: 12, fontFamily: 'Geist Mono, monospace', background: 'var(--color-bg)', border: '1px solid rgba(26,46,42,0.15)', borderRadius: 7, color: 'var(--color-text)', width: 80 }}
-            />
-            <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>seconds</span>
-          </div>
-        }
-      />
-      <Row
-        label="Max result rows"
-        control={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="number" min={0} value={prefs.resultsMaxRows}
-              onChange={(e) => update({ resultsMaxRows: Number(e.target.value) })}
-              style={{ padding: '6px 10px', fontSize: 12, fontFamily: 'Geist Mono, monospace', background: 'var(--color-bg)', border: '1px solid rgba(26,46,42,0.15)', borderRadius: 7, color: 'var(--color-text)', width: 80 }}
-            />
-            <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>rows</span>
-          </div>
-        }
-      />
-      <Row
-        label="Auto-update"
-        hint="Checks once a day. Never installs without asking."
         last
-        control={<Toggle checked={prefs.autoUpdateEnabled} onChange={(v) => update({ autoUpdateEnabled: v })} />}
+        control={<Toggle checked={prefs.editorWordWrap} onChange={(v) => update({ editorWordWrap: v })} />}
       />
     </div>
   );
