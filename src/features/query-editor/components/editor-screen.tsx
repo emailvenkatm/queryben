@@ -196,7 +196,6 @@ export function EditorScreen() {
               isPending={isPending}
               hasConnection={Boolean(activeConnectionId)}
               onRun={handleRun}
-              onCancel={() => { /* cancel not yet wired: activeQueryId is null */ }}
               onExplain={handleExplain}
               onToggleAi={() => setAiOpen((v) => !v)}
               aiOpen={aiOpen}

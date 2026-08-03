@@ -40,7 +40,6 @@ interface EditorToolbarProps {
   isPending: boolean;
   hasConnection: boolean;
   onRun: () => void;
-  onCancel: () => void;
   onExplain: () => void;
   onToggleAi: () => void;
   aiOpen: boolean;
@@ -48,7 +47,7 @@ interface EditorToolbarProps {
   onOpenSnippets: () => void;
 }
 
-export function EditorToolbar({ isPending, hasConnection, onRun, onCancel, onExplain, onToggleAi, aiOpen, onSaveQuery, onOpenSnippets }: EditorToolbarProps) {
+export function EditorToolbar({ isPending, hasConnection, onRun, onExplain, onToggleAi, aiOpen, onSaveQuery, onOpenSnippets }: EditorToolbarProps) {
   return (
     <div style={{ background: 'var(--color-bg)', borderBottom: '1px solid rgba(26,46,42,0.08)', padding: '7px 16px', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }} role="toolbar" aria-label="Query editor toolbar">
       <button
@@ -65,15 +64,6 @@ export function EditorToolbar({ isPending, hasConnection, onRun, onCancel, onExp
         <Kbd light>F5</Kbd>
       </button>
 
-      {isPending && (
-        <TBtn onClick={onCancel} ariaLabel="Cancel query">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <rect x="2" y="2" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.3" />
-          </svg>
-          Cancel
-        </TBtn>
-      )}
-
       <Sep />
 
       <TBtn disabled={isPending || !hasConnection} onClick={onExplain} ariaLabel="Explain query">
@@ -81,14 +71,6 @@ export function EditorToolbar({ isPending, hasConnection, onRun, onCancel, onExp
           <path d="M2 9l3-3-3-3M7 9h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         Explain
-      </TBtn>
-
-      <TBtn disabled={isPending} ariaLabel="Format SQL (Shift+Alt+F)">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-          <path d="M2 4h8M2 7h5M2 10h6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
-        Format
-        <Kbd>⇧⌥F</Kbd>
       </TBtn>
 
       <Sep />
@@ -120,10 +102,8 @@ export function EditorToolbar({ isPending, hasConnection, onRun, onCancel, onExp
 
       <div style={{ flex: 1 }} />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--color-text-muted)', fontFamily: 'Geist Mono, monospace' }}>
-        <span>Ln 1, Col 1</span>
-        <Sep />
-        <span style={{ fontFamily: 'Geist, sans-serif' }}>SQL Server</span>
+      <div style={{ fontSize: 11, color: 'var(--color-text-muted)', fontFamily: 'Geist, sans-serif' }}>
+        SQL Server
       </div>
     </div>
   );
