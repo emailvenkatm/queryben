@@ -206,15 +206,6 @@ export function ObjectTree() {
                   />
                 </svg>
               </button>
-              <button
-                type="button"
-                aria-label="Add new query"
-                style={{ background: 'none', border: 'none', color: 'rgba(244,239,231,0.4)', cursor: 'pointer', padding: 2 }}
-              >
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                  <path d="M6.5 1.5v10M1.5 6.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </button>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(244,239,231,0.07)', border: '1px solid rgba(244,239,231,0.10)', borderRadius: 7, padding: '6px 10px' }}>

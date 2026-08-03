@@ -120,16 +120,6 @@ export function SchemaSection({ schema, filter }: SchemaSectionProps) {
     setMenu({ x: e.clientX, y: e.clientY, target });
   };
 
-  const handleDesignTable = (schemaName: string, tableName: string): void => {
-    if (!activeConnectionId) return;
-    navigate(`/designer/${activeConnectionId}/${schemaName}/${tableName}`);
-  };
-
-  const handleNewTable = (schemaName: string): void => {
-    if (!activeConnectionId) return;
-    navigate(`/designer/${activeConnectionId}/${schemaName}/NewTable?new=1`);
-  };
-
   const handleScriptAs = async (
     kind: ScriptObjectKind,
     schemaName: string,
@@ -211,9 +201,6 @@ export function SchemaSection({ schema, filter }: SchemaSectionProps) {
           y={menu.y}
           target={menu.target}
           onClose={() => setMenu(null)}
-          onDesignTable={menu.target.kind === 'table' ? () => handleDesignTable(menu.target.schema, menu.target.name) : undefined}
-          onNewTable={menu.target.kind === 'schema' ? () => handleNewTable(menu.target.schema) : undefined}
-          onImportData={menu.target.kind === 'table' || menu.target.kind === 'schema' ? () => {} : undefined}
           onScriptAs={menu.target.kind === 'schema' ? undefined : (action) => void handleScriptAs(menu.target.kind as ScriptObjectKind, menu.target.schema, menu.target.name, action)}
         />
       )}

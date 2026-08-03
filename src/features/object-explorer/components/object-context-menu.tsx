@@ -35,11 +35,12 @@ export function ObjectContextMenu({ x, y, target, onClose, onDesignTable, onNewT
   }, [onClose]);
 
   const actions = useMemo<MenuAction[]>(() => {
+    const list: MenuAction[] = [];
+
     if (target.kind === 'schema') {
-      return [
-        { label: 'New table…', onClick: () => onNewTable?.(), disabled: !onNewTable },
-        { label: 'Import data…', onClick: () => onImportData?.(), disabled: !onImportData },
-      ];
+      if (onNewTable) list.push({ label: 'New table…', onClick: () => onNewTable() });
+      if (onImportData) list.push({ label: 'Import data…', onClick: () => onImportData() });
+      return list;
     }
 
     const scriptAction = (action: ScriptAction, label: string): MenuAction => ({
@@ -65,14 +66,16 @@ export function ObjectContextMenu({ x, y, target, onClose, onDesignTable, onNewT
         ];
 
     if (target.kind === 'table') {
-      return [
-        { label: 'Design table…', onClick: () => onDesignTable?.(), disabled: !onDesignTable },
-        { label: 'Import data…', onClick: () => onImportData?.(), disabled: !onImportData },
-        { label: 'Script as', onClick: () => {}, submenu: scriptSubmenu },
-      ];
+      if (onDesignTable) list.push({ label: 'Design table…', onClick: () => onDesignTable() });
+      if (onImportData) list.push({ label: 'Import data…', onClick: () => onImportData() });
     }
-    return [{ label: 'Script as', onClick: () => {}, submenu: scriptSubmenu }];
+    if (onScriptAs) list.push({ label: 'Script as', onClick: () => {}, submenu: scriptSubmenu });
+    return list;
   }, [target, onDesignTable, onNewTable, onImportData, onScriptAs]);
+
+  useEffect(() => {
+    if (actions.length === 0) onClose();
+  }, [actions.length, onClose]);
 
   const style: React.CSSProperties = {
     left: Math.min(x, window.innerWidth - 220),
