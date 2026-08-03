@@ -3,7 +3,6 @@ import { cn } from '@/shared/lib/cn';
 import {
   IconConnections,
   IconDatabase,
-  IconDiff,
   IconHistory,
   IconNotebook,
   IconQueries,
