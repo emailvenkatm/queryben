@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { PaletteItem, SectionHeader, HighlightMatch } from './palette-item';
 import { usePaletteCommands } from '../hooks/use-palette-commands';
 import { ConnectionDot } from '@/shared/ui/color-tag';
@@ -62,17 +61,9 @@ function PDivider() {
   return <div style={{ borderTop: '1px solid rgba(26,46,42,0.07)', margin: '4px 0' }} />;
 }
 
-// Placeholder — swapped for the real hook when the results feature exposes
-// its public surface. Keeps the palette self-contained meanwhile.
-function useResultsBridge() {
-  return { hasResults: false, copy: (_format: string) => {} };
-}
-
 export function Palette({ open, onOpenChange }: PaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
-  const [exportOpen, setExportOpen] = useState(false);
-  const { hasResults, copy } = useResultsBridge();
 
   const close = () => {
     onOpenChange(false);
@@ -92,12 +83,9 @@ export function Palette({ open, onOpenChange }: PaletteProps) {
     return () => document.removeEventListener('keydown', handler);
   });
 
-  const { tabCommands, systemCommands, connectionCommands, filteredConnections } = usePaletteCommands({
+  const { tabCommands, systemCommands, connectionCommands } = usePaletteCommands({
     query,
     onClose: close,
-    onExport: () => setExportOpen(true),
-    onCopy: (format) => copy(format),
-    hasResults,
   });
 
   if (!open) return null;
@@ -196,7 +184,7 @@ export function Palette({ open, onOpenChange }: PaletteProps) {
         </div>
 
         <div style={{ borderTop: '1px solid rgba(26,46,42,0.07)', padding: '9px 16px', display: 'flex', alignItems: 'center', gap: 16 }}>
-          {[{ key: '↑↓', label: 'Navigate' }, { key: '↵', label: 'Open' }, { key: 'Tab', label: 'Preview' }].map(({ key, label }) => (
+          {[{ key: '↑↓', label: 'Navigate' }, { key: '↵', label: 'Open' }].map(({ key, label }) => (
             <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--color-text-muted)' }}>
               <span style={{ background: 'rgba(26,46,42,0.06)', borderRadius: 3, padding: '1px 5px', fontSize: 10, fontFamily: 'Geist Mono, monospace' }} aria-hidden="true">{key}</span>
               {label}

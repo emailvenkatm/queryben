@@ -16,12 +16,9 @@ export interface PaletteCommand {
 interface UsePaletteCommandsArgs {
   query: string;
   onClose: () => void;
-  onExport: () => void;
-  onCopy: (format: 'markdown' | 'json') => void;
-  hasResults: boolean;
 }
 
-export function usePaletteCommands({ query, onClose, onExport, onCopy, hasResults }: UsePaletteCommandsArgs) {
+export function usePaletteCommands({ query, onClose }: UsePaletteCommandsArgs) {
   const navigate = useNavigate();
   const { data: connections } = useConnections();
   const tabs = useOpenTabsStore((s) => s.tabs);
@@ -58,36 +55,6 @@ export function usePaletteCommands({ query, onClose, onExport, onCopy, hasResult
   const matchesCmd = (term: string): boolean => !q || term.toLowerCase().includes(q);
 
   const systemCommands: PaletteCommand[] = [
-    matchesCmd('run execute query') && {
-      id: 'run-query',
-      label: 'Execute query',
-      sub: 'Run the active query in the editor',
-      kbd: 'F5',
-      section: 'Commands',
-      onSelect: onClose,
-    },
-    matchesCmd('export results') && {
-      id: 'export',
-      label: 'Export results…',
-      sub: 'Save as CSV, XLSX, or JSON',
-      kbd: '⇧⌘E',
-      section: 'Commands',
-      onSelect: () => { if (!hasResults) return; onClose(); onExport(); },
-    },
-    matchesCmd('copy markdown table') && {
-      id: 'copy-md',
-      label: 'Copy last result as Markdown',
-      sub: 'Copy results as a Markdown table',
-      section: 'Commands',
-      onSelect: () => { if (!hasResults) return; onCopy('markdown'); onClose(); },
-    },
-    matchesCmd('copy json') && {
-      id: 'copy-json',
-      label: 'Copy last result as JSON',
-      sub: 'Copy results as JSON',
-      section: 'Commands',
-      onSelect: () => { if (!hasResults) return; onCopy('json'); onClose(); },
-    },
     matchesCmd('settings preferences') && {
       id: 'settings',
       label: 'Open Settings',
